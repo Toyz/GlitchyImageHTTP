@@ -2,14 +2,26 @@
 
 
 [[projects]]
+  name = "github.com/gorilla/context"
+  packages = ["."]
+  revision = "1ea25387ff6f684839d82767c1733ff4d4d15d0a"
+  version = "v1.1"
+
+[[projects]]
+  name = "github.com/gorilla/mux"
+  packages = ["."]
+  revision = "53c1911da2b537f792e7cafcb446b05ffe33b996"
+  version = "v1.6.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/sugoiuguu/go-glitch"
   packages = ["."]
-  revision = "bc3de9144b6375742d4045aa9cb8e9bcf77d9f2a"
+  revision = "9d3ca137ed01ae02bb27e1568a13a05ee636770e"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e66ec1ca156a06572cb682e91acd0b148a8b35641247553284f0380872513696"
+  inputs-digest = "f5f6e6b06843d8efa10b234513160794c9d72601238f2e6497950076896ef0b2"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -17,6 +17,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/gorilla/mux"
 	glitch "github.com/sugoiuguu/go-glitch"
 )
 
@@ -60,10 +61,12 @@ func upload(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", index)
-	http.HandleFunc("/upload", upload)
+	r := mux.NewRouter()
 
-	log.Fatal(http.ListenAndServe(getEnv("LISTEN", ":8080"), nil))
+	r.HandleFunc("/", index)
+	r.HandleFunc("/upload", upload)
+
+	log.Fatal(http.ListenAndServe(getEnv("LISTEN", ":8080"), r))
 }
 
 func getEnv(key, fallback string) string {

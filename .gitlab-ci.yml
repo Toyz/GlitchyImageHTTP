@@ -1,0 +1,49 @@
+image: docker:latest
+services:
+    - docker:dind
+    
+stages:
+  - build
+  - deploy
+
+before_script:
+  - sed -i -e 's/v[[:digit:]]\.[[:digit:]]/edge/g' /etc/apk/repositories
+  - apk upgrade --update-cache --available
+  - apk --no-cache add git gzip gcc musl-dev tree
+  - apk --no-cache add go
+  - mkdir -p /goSrc/src/github.com/Toyz
+  - cp -r /builds/Toyz/GlitchyImageHTTP /goSrc/src/github.com/Toyz
+  - export GOPATH=/goSrc
+  - go get -u github.com/golang/dep/cmd/dep
+  # - go get -u github.com/jteeuwen/go-bindata/...
+  - export PATH=$PATH:/goSrc/bin
+  - cd /goSrc/src/github.com/Toyz/GlitchyImageHTTP
+
+build:
+  stage: build
+  script:
+    - dep ensure
+    # - go-bindata ./assets/...
+    # - CGO_ENABLED=0 GOOS=linux godep go build -o pw -a -installsuffix cgo -ldflags '-w -s'
+    - CGO_ENABLED=0 GOOS=linux go build  -ldflags '-w -s' -a -installsuffix cgo -o pw
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:staging" .
+    - docker push "$CI_REGISTRY_IMAGE:staging"
+deploy-live:
+  stage: deploy
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker pull "$CI_REGISTRY_IMAGE:staging"
+    - docker tag "$CI_REGISTRY_IMAGE:staging" "$CI_REGISTRY_IMAGE:latest"
+    - docker push "$CI_REGISTRY_IMAGE:latest"
+  only:
+    - master
+deploy-dev:
+  stage: deploy
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker pull "$CI_REGISTRY_IMAGE:staging"
+    - docker tag "$CI_REGISTRY_IMAGE:staging" "$CI_REGISTRY_IMAGE:develop"
+    - docker push "$CI_REGISTRY_IMAGE:develop"
+  only:
+    - develop

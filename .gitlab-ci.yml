@@ -21,6 +21,7 @@ before_script:
 build:
   stage: build
   script:
+    - cp /etc/ssl/certs/ca-certificates.crt ca-certificates.crt 
     - dep ensure
     - CGO_ENABLED=0 GOOS=linux go build  -ldflags '-w -s' -a -installsuffix cgo -o pw
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY

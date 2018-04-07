@@ -1,5 +1,4 @@
-FROM scratch    
-ADD ca-certificates.crt /etc/ssl/certs/
+FROM centurylink/ca-certs
 
 ADD ./tmpls /tmpls
 ADD pw /

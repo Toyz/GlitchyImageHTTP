@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/sugoiuguu/go-glitch"
   packages = ["."]
-  revision = "12c833b3f705edd8360a802f4977e0afbce0b665"
+  revision = "bc3de9144b6375742d4045aa9cb8e9bcf77d9f2a"
 
 [solve-meta]
   analyzer-name = "dep"

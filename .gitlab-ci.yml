@@ -15,7 +15,6 @@ before_script:
   - cp -r /builds/Toyz/GlitchyImageHTTP /goSrc/src/github.com/Toyz
   - export GOPATH=/goSrc
   - go get -u github.com/golang/dep/cmd/dep
-  # - go get -u github.com/jteeuwen/go-bindata/...
   - export PATH=$PATH:/goSrc/bin
   - cd /goSrc/src/github.com/Toyz/GlitchyImageHTTP
 

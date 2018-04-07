@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"crypto/md5"
-	"encoding/base64"
 	"fmt"
 	"image"
 	_ "image/gif"
@@ -53,16 +52,22 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		out, _ := expr.JumblePixels(img)
 		png.Encode(buff, out)
 
-		imgBase64Str := base64.StdEncoding.EncodeToString(buff.Bytes())
+		sum := md5.Sum(buff.Bytes())
+
+		f, _ := os.Create(fmt.Sprintf("./uploads/%x.png", sum))
+		f.Write(buff.Bytes())
+		f.Close()
+		//imgBase64Str := base64.StdEncoding.EncodeToString(buff.Bytes())
 
 		t, _ := template.ParseFiles("./tmpls/img.html")
-		t.Execute(w, imgBase64Str)
+		t.Execute(w, fmt.Sprintf("%x.png", sum))
 	}
 }
 
 func main() {
 	r := mux.NewRouter()
 
+	r.PathPrefix("/img/").Handler(http.StripPrefix("/img/", http.FileServer(http.Dir("./uploads/"))))
 	r.HandleFunc("/", index)
 	r.HandleFunc("/upload", upload)
 

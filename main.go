@@ -49,7 +49,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		buff := new(bytes.Buffer)
 
 		expr, _ := glitch.CompileExpression(expression)
-		out, _ := glitch.JumblePixels(expr, img)
+		out, _ := expr.JumblePixels(img)
 		png.Encode(buff, out)
 
 		imgBase64Str := base64.StdEncoding.EncodeToString(buff.Bytes())

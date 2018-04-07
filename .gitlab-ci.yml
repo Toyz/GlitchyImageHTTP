@@ -23,8 +23,6 @@ build:
   stage: build
   script:
     - dep ensure
-    # - go-bindata ./assets/...
-    # - CGO_ENABLED=0 GOOS=linux godep go build -o pw -a -installsuffix cgo -ldflags '-w -s'
     - CGO_ENABLED=0 GOOS=linux go build  -ldflags '-w -s' -a -installsuffix cgo -o pw
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     - docker build --pull -t "$CI_REGISTRY_IMAGE:staging" .
@@ -38,12 +36,3 @@ deploy-live:
     - docker push "$CI_REGISTRY_IMAGE:latest"
   only:
     - master
-deploy-dev:
-  stage: deploy
-  script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker pull "$CI_REGISTRY_IMAGE:staging"
-    - docker tag "$CI_REGISTRY_IMAGE:staging" "$CI_REGISTRY_IMAGE:develop"
-    - docker push "$CI_REGISTRY_IMAGE:develop"
-  only:
-    - develop

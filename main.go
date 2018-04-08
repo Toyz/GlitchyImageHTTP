@@ -39,14 +39,22 @@ func index(w http.ResponseWriter, r *http.Request) {
 func upload(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		r.ParseMultipartForm(32 << 20)
-		file, handler, err := r.FormFile("uploadfile")
+		file, _, err := r.FormFile("uploadfile")
 		expression := r.FormValue("expression")
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		cntType := handler.Header.Get("Content-Type")
+		// Hack: This is hacky as all hell just to get the damn fileHeader form the bytes
+		fileHeader := make([]byte, 512)
+		if _, err := file.Read(fileHeader); err != nil {
+			return
+		}
+		if _, err := file.Seek(0, 0); err != nil {
+			return
+		}
+		cntType := http.DetectContentType(fileHeader)
 		if ok, _ := in_array(cntType, allowedFileTypes); !ok {
 			return
 		}

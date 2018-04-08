@@ -27,3 +27,4 @@ debug
 
 bindata.go
 assets/version.txt
+uploads/*.png

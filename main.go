@@ -20,6 +20,8 @@ import (
 	glitch "github.com/sugoiuguu/go-glitch"
 )
 
+var allowedFileTypes = []string{"image/jpeg", "image/png"}
+
 func index(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		crutime := time.Now().Unix()
@@ -37,12 +39,18 @@ func index(w http.ResponseWriter, r *http.Request) {
 func upload(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		r.ParseMultipartForm(32 << 20)
-		file, _, err := r.FormFile("uploadfile")
+		file, handler, err := r.FormFile("uploadfile")
 		expression := r.FormValue("expression")
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
+
+		cntType := handler.Header.Get("Content-Type")
+		if ok, _ := in_array(cntType, allowedFileTypes); !ok {
+			return
+		}
+
 		defer file.Close()
 		img, _, _ := image.Decode(file)
 

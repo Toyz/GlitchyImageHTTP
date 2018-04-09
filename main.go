@@ -43,16 +43,18 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		file, _, err := r.FormFile("uploadfile")
 		expression := r.FormValue("expression")
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 
 		// Hack: This is hacky as all hell just to get the damn fileHeader form the bytes
 		fileHeader := make([]byte, 512)
 		if _, err := file.Read(fileHeader); err != nil {
+			log.Println(err)
 			return
 		}
 		if _, err := file.Seek(0, 0); err != nil {
+			log.Println(err)
 			return
 		}
 		cntType := http.DetectContentType(fileHeader)
@@ -65,8 +67,18 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 		buff := new(bytes.Buffer)
 
-		expr, _ := glitch.CompileExpression(expression)
-		out, _ := expr.JumblePixels(img)
+		expr, err := glitch.CompileExpression(expression)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		out, err := expr.JumblePixels(img)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
 		png.Encode(buff, out)
 
 		sum := md5.Sum(buff.Bytes())
@@ -75,6 +87,9 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		switch strings.ToLower(core.GetEnv("SAVE_MODE", "disk")) {
 		case "disk":
 			saveMode = filemodes.FSMode{}
+			break
+		case "aws":
+			saveMode = filemodes.CDNMode{}
 			break
 		}
 		actualFileName := saveMode.Write(buff.Bytes(), fmt.Sprintf("%x.png", sum))
@@ -89,7 +104,9 @@ func main() {
 
 	r := mux.NewRouter()
 
-	r.PathPrefix(staticFilePath).Handler(http.StripPrefix(staticFilePath, http.FileServer(http.Dir(core.UploadsFolder()))))
+	if len(staticFilePath) > 0 {
+		r.PathPrefix(staticFilePath).Handler(http.StripPrefix(staticFilePath, http.FileServer(http.Dir(core.UploadsFolder()))))
+	}
 	r.HandleFunc("/", index)
 	r.HandleFunc("/upload", upload)
 

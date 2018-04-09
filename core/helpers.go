@@ -18,6 +18,10 @@ func GetTemplateFilePath(name string) string {
 	return path.Join(AssetsFolder(), "tmpls", fmt.Sprintf("%s.html", name))
 }
 
+func GetTemplateFolder() string {
+	return path.Join(AssetsFolder(), "tmpls")
+}
+
 func GetPublicFolder() string {
 	return path.Join(AssetsFolder(), "public")
 }

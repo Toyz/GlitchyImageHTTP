@@ -62,11 +62,17 @@
   branch = "master"
   name = "github.com/sugoiuguu/go-glitch"
   packages = ["."]
-  revision = "ccf832c44d2fdecb937e6fe7cc826788a94fa99c"
+  revision = "4408cfe13cd9c57c4e3502523837250f38c93c56"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/unrolled/render"
+  packages = ["."]
+  revision = "65450fb6b2d3595beca39f969c411db8f8d5c806"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f67ff0a27cb670a5a259ac0aa00d4f77951259dbd0061d391cc4f2c8732739be"
+  inputs-digest = "442c727967c1852f4715bbf146d452114c4179b32e77d9f2a00e089f9f01745c"
   solver-name = "gps-cdcl"
   solver-version = 1

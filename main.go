@@ -12,16 +12,17 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"text/template"
 	"time"
 
 	"github.com/Toyz/GlitchyImageHTTP/core"
 	"github.com/Toyz/GlitchyImageHTTP/core/filemodes"
 	"github.com/gorilla/mux"
 	glitch "github.com/sugoiuguu/go-glitch"
+	"github.com/unrolled/render"
 )
 
 var allowedFileTypes = []string{"image/jpeg", "image/png"}
+var htmlRender *render.Render
 
 func index(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
@@ -30,8 +31,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(h, strconv.FormatInt(crutime, 10))
 		token := fmt.Sprintf("%x", h.Sum(nil))
 
-		t, _ := template.ParseFiles(core.GetTemplateFilePath("index"))
-		t.Execute(w, token)
+		htmlRender.HTML(w, http.StatusOK, "index", token)
 	}
 }
 
@@ -94,13 +94,20 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		}
 		actualFileName := saveMode.Write(buff.Bytes(), fmt.Sprintf("%x.png", sum))
 
-		t, _ := template.ParseFiles(core.GetTemplateFilePath("img"))
-		t.Execute(w, fmt.Sprintf("%s", actualFileName))
+		//t, _ := template.ParseFiles(core.GetTemplateFilePath("img"))
+		// t.Execute(w, fmt.Sprintf("%s", actualFileName))
+		htmlRender.HTML(w, http.StatusOK, "img", fmt.Sprintf("%s", actualFileName))
 	}
 }
 
 func main() {
 	staticFilePath := core.GetEnv("HTTP_UPLOADS_URL", "/img/")
+
+	htmlRender = render.New(render.Options{
+		Directory:  core.GetTemplateFolder(),
+		Extensions: []string{".html"},
+		Layout:     "layout",
+	})
 
 	r := mux.NewRouter()
 

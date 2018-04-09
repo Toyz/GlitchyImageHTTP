@@ -18,6 +18,10 @@ func GetTemplateFilePath(name string) string {
 	return path.Join(AssetsFolder(), "tmpls", fmt.Sprintf("%s.html", name))
 }
 
+func GetPublicFolder() string {
+	return path.Join(AssetsFolder(), "public")
+}
+
 // TODO: add things we actually need helpers for here
 func InArray(val string, array []string) (exists bool, index int) {
 	exists = false

@@ -107,6 +107,8 @@ func main() {
 	if len(staticFilePath) > 0 {
 		r.PathPrefix(staticFilePath).Handler(http.StripPrefix(staticFilePath, http.FileServer(http.Dir(core.UploadsFolder()))))
 	}
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(core.GetPublicFolder()))))
+
 	r.HandleFunc("/", index)
 	r.HandleFunc("/upload", upload)
 

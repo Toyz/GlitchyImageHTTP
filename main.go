@@ -23,6 +23,7 @@ import (
 
 var allowedFileTypes = []string{"image/jpeg", "image/png"}
 var htmlRender *render.Render
+var saveMode filemodes.SaveMode
 
 func index(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
@@ -75,15 +76,6 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 		sum := md5.Sum(buff.Bytes())
 
-		var saveMode filemodes.SaveMode
-		switch core.GetSaveMode() {
-		case "fs":
-			saveMode = filemodes.FSMode{}
-			break
-		case "aws":
-			saveMode = filemodes.CDNMode{}
-			break
-		}
 		actualFileName := saveMode.Write(buff.Bytes(), fmt.Sprintf("%x.png", sum))
 
 		htmlRender.HTML(w, http.StatusOK, "img", fmt.Sprintf("%s", actualFileName))
@@ -98,6 +90,9 @@ func main() {
 		Extensions: []string{".html"},
 		Layout:     "layout",
 	})
+
+	saveMode = filemodes.GetFileMode()
+	saveMode.Setup()
 
 	r := mux.NewRouter()
 

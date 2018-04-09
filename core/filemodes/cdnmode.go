@@ -13,11 +13,11 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-type CDNMode struct{}
+type CDNMode struct {
+	s3Client *s3.S3
+}
 
-func (cdn CDNMode) Write(data []byte, name string) string {
-	resourceURL := cdn.Path()
-	bucket := core.GetEnv("AWS_BUCKET", "")
+func (cdn *CDNMode) Setup() {
 	accessKey := core.GetEnv("AWS_ACCESS_KEY", "")
 	secretKey := core.GetEnv("AWS_SECRET_KEY", "")
 	region := core.GetEnv("AWS_REGION", "us-east-1")
@@ -32,15 +32,22 @@ func (cdn CDNMode) Write(data []byte, name string) string {
 	newSession := session.New(s3Config)
 	s3Client := s3.New(newSession)
 
+	cdn.s3Client = s3Client
+}
+
+func (cdn *CDNMode) Write(data []byte, name string) string {
+	resourceURL := cdn.Path()
+	bucket := core.GetEnv("AWS_BUCKET", "")
+
 	filePath := fmt.Sprintf("%s/%s/%s", name[0:2], name[2:4], name)
 	object := s3.PutObjectInput{
 		Body:        bytes.NewReader(data),
 		Bucket:      aws.String(bucket),
 		Key:         aws.String(filePath),
 		ACL:         aws.String("public-read"),
-		ContentType: aws.String("image/png"),
+		ContentType: aws.String(core.GetMimeTypeFromBytes(data)),
 	}
-	_, err := s3Client.PutObject(&object)
+	_, err := cdn.s3Client.PutObject(&object)
 
 	if err != nil {
 		log.Panic(err)
@@ -50,6 +57,6 @@ func (cdn CDNMode) Write(data []byte, name string) string {
 	return fmt.Sprintf("%s%s", resourceURL, filePath)
 }
 
-func (CDNMode) Path() string {
+func (*CDNMode) Path() string {
 	return strings.TrimSpace(core.GetEnv("AWS_RESOURCE_URL", ""))
 }

@@ -68,3 +68,7 @@ func GetMimeType(file multipart.File) string {
 
 	return http.DetectContentType(fileHeader)
 }
+
+func GetMimeTypeFromBytes(fileHeader []byte) string {
+	return http.DetectContentType(fileHeader)
+}

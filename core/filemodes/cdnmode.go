@@ -15,8 +15,8 @@ import (
 
 type CDNMode struct{}
 
-func (CDNMode) Write(data []byte, name string) string {
-	resourceURL := strings.TrimSpace(core.GetEnv("AWS_RESOURCE_URL", ""))
+func (cdn CDNMode) Write(data []byte, name string) string {
+	resourceURL := cdn.Path()
 	bucket := core.GetEnv("AWS_BUCKET", "")
 	accessKey := core.GetEnv("AWS_ACCESS_KEY", "")
 	secretKey := core.GetEnv("AWS_SECRET_KEY", "")
@@ -48,4 +48,8 @@ func (CDNMode) Write(data []byte, name string) string {
 	}
 
 	return fmt.Sprintf("%s%s", resourceURL, filePath)
+}
+
+func (CDNMode) Path() string {
+	return strings.TrimSpace(core.GetEnv("AWS_RESOURCE_URL", ""))
 }

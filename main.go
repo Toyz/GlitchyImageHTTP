@@ -41,6 +41,8 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		r.ParseMultipartForm(32 << 20)
 		file, _, err := r.FormFile("uploadfile")
+		defer file.Close()
+
 		expression := r.FormValue("expression")
 		if err != nil {
 			log.Println(err)
@@ -48,21 +50,11 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Hack: This is hacky as all hell just to get the damn fileHeader form the bytes
-		fileHeader := make([]byte, 512)
-		if _, err := file.Read(fileHeader); err != nil {
-			log.Println(err)
-			return
-		}
-		if _, err := file.Seek(0, 0); err != nil {
-			log.Println(err)
-			return
-		}
-		cntType := http.DetectContentType(fileHeader)
+		cntType := core.GetMimeType(file)
 		if ok, _ := core.InArray(cntType, allowedFileTypes); !ok {
 			return
 		}
 
-		defer file.Close()
 		img, _, _ := image.Decode(file)
 
 		buff := new(bytes.Buffer)
@@ -84,8 +76,8 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		sum := md5.Sum(buff.Bytes())
 
 		var saveMode filemodes.SaveMode
-		switch strings.ToLower(core.GetEnv("SAVE_MODE", "disk")) {
-		case "disk":
+		switch core.GetSaveMode() {
+		case "fs":
 			saveMode = filemodes.FSMode{}
 			break
 		case "aws":
@@ -94,8 +86,6 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		}
 		actualFileName := saveMode.Write(buff.Bytes(), fmt.Sprintf("%x.png", sum))
 
-		//t, _ := template.ParseFiles(core.GetTemplateFilePath("img"))
-		// t.Execute(w, fmt.Sprintf("%s", actualFileName))
 		htmlRender.HTML(w, http.StatusOK, "img", fmt.Sprintf("%s", actualFileName))
 	}
 }
@@ -111,8 +101,9 @@ func main() {
 
 	r := mux.NewRouter()
 
-	if len(staticFilePath) > 0 {
-		r.PathPrefix(staticFilePath).Handler(http.StripPrefix(staticFilePath, http.FileServer(http.Dir(core.UploadsFolder()))))
+	if len(staticFilePath) > 0 && strings.EqualFold(core.GetSaveMode(), "fs") {
+		fs := filemodes.FSMode{}
+		r.PathPrefix(staticFilePath).Handler(http.StripPrefix(staticFilePath, http.FileServer(http.Dir(fs.Path()))))
 	}
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(core.GetPublicFolder()))))
 

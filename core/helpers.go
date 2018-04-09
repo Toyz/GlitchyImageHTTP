@@ -2,18 +2,19 @@ package core
 
 import (
 	"fmt"
+	"log"
+	"mime/multipart"
+	"net/http"
 	"os"
 	"path"
+	"strings"
 )
 
 func AssetsFolder() string {
 	return GetEnv("ASSETS_FOLDER", "./assets/")
 }
 
-func UploadsFolder() string {
-	return GetEnv("UPLOAD_FOLDER", "./assets/uploads")
-}
-
+// TODO: Move template stuff into it's own "render" class
 func GetTemplateFilePath(name string) string {
 	return path.Join(AssetsFolder(), "tmpls", fmt.Sprintf("%s.html", name))
 }
@@ -22,8 +23,13 @@ func GetTemplateFolder() string {
 	return path.Join(AssetsFolder(), "tmpls")
 }
 
+// TODO: Move this into a "public" type system to let me extend the render for easier loading of assets
 func GetPublicFolder() string {
 	return path.Join(AssetsFolder(), "public")
+}
+
+func GetSaveMode() string {
+	return strings.ToLower(GetEnv("SAVE_MODE", "fs"))
 }
 
 // TODO: add things we actually need helpers for here
@@ -47,4 +53,18 @@ func GetEnv(key, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+func GetMimeType(file multipart.File) string {
+	fileHeader := make([]byte, 512)
+	if _, err := file.Read(fileHeader); err != nil {
+		log.Println(err)
+		return ""
+	}
+	if _, err := file.Seek(0, 0); err != nil {
+		log.Println(err)
+		return ""
+	}
+
+	return http.DetectContentType(fileHeader)
 }

@@ -5,17 +5,18 @@ import (
 	"crypto/md5"
 	"fmt"
 	"image"
-	_ "image/gif"
 	_ "image/jpeg"
 	"image/png"
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
+	"strings"
 	"text/template"
 	"time"
 
+	"github.com/Toyz/GlitchyImageHTTP/core"
+	"github.com/Toyz/GlitchyImageHTTP/core/filemodes"
 	"github.com/gorilla/mux"
 	glitch "github.com/sugoiuguu/go-glitch"
 )
@@ -29,7 +30,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(h, strconv.FormatInt(crutime, 10))
 		token := fmt.Sprintf("%x", h.Sum(nil))
 
-		t, _ := template.ParseFiles("./tmpls/index.html")
+		t, _ := template.ParseFiles(core.GetTemplateFilePath("index"))
 		t.Execute(w, token)
 	}
 }
@@ -55,7 +56,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		cntType := http.DetectContentType(fileHeader)
-		if ok, _ := in_array(cntType, allowedFileTypes); !ok {
+		if ok, _ := core.InArray(cntType, allowedFileTypes); !ok {
 			return
 		}
 
@@ -70,29 +71,27 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 		sum := md5.Sum(buff.Bytes())
 
-		f, _ := os.Create(fmt.Sprintf("./uploads/%x.png", sum))
-		f.Write(buff.Bytes())
-		f.Close()
-		//imgBase64Str := base64.StdEncoding.EncodeToString(buff.Bytes())
+		var saveMode filemodes.SaveMode
+		switch strings.ToLower(core.GetEnv("SAVE_MODE", "disk")) {
+		case "disk":
+			saveMode = filemodes.FSMode{}
+			break
+		}
+		actualFileName := saveMode.Write(buff.Bytes(), fmt.Sprintf("%x.png", sum))
 
-		t, _ := template.ParseFiles("./tmpls/img.html")
-		t.Execute(w, fmt.Sprintf("%x.png", sum))
+		t, _ := template.ParseFiles(core.GetTemplateFilePath("img"))
+		t.Execute(w, fmt.Sprintf("%s", actualFileName))
 	}
 }
 
 func main() {
+	staticFilePath := core.GetEnv("HTTP_UPLOADS_URL", "/img/")
+
 	r := mux.NewRouter()
 
-	r.PathPrefix("/img/").Handler(http.StripPrefix("/img/", http.FileServer(http.Dir("./uploads/"))))
+	r.PathPrefix(staticFilePath).Handler(http.StripPrefix(staticFilePath, http.FileServer(http.Dir(core.UploadsFolder()))))
 	r.HandleFunc("/", index)
 	r.HandleFunc("/upload", upload)
 
-	log.Fatal(http.ListenAndServe(getEnv("LISTEN", ":8080"), r))
-}
-
-func getEnv(key, fallback string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return fallback
+	log.Fatal(http.ListenAndServe(core.GetEnv("LISTEN", ":8080"), r))
 }

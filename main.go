@@ -105,12 +105,7 @@ func viewImage(w http.ResponseWriter, r *http.Request) {
 	defer session.Close()
 
 	var image database.ArtItem
-	err := c.Find(bson.M{"id": id}).One(&image)
-
-	if err != nil {
-		http.Redirect(w, r, "/", 302)
-		return
-	}
+	c.Find(bson.M{"id": id}).One(&image)
 
 	if len(image.FullPath) <= 0 {
 		http.Redirect(w, r, "/", 302)

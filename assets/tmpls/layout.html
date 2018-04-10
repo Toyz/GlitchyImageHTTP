@@ -1,6 +1,10 @@
 <html>
 <head>
-   	<title>Glitchy Image</title>
+       {{ if hasField . "ID" }}
+       <title>Image {{.ID}}}</title>
+       {{ else }}
+       <title>Glitchy Image</title>
+       {{ end }}
 </head>
 <body>
     {{ yield }}

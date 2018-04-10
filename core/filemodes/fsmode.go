@@ -16,7 +16,7 @@ func (fs *FSMode) Setup() {
 	}
 }
 
-func (fs *FSMode) Write(data []byte, name string) string {
+func (fs *FSMode) Write(data []byte, name string) (string, string) {
 	staticFilePath := core.GetEnv("HTTP_UPLOADS_URL", "/img/")
 	physicalUploadsFolder := fs.Path()
 
@@ -24,7 +24,7 @@ func (fs *FSMode) Write(data []byte, name string) string {
 	f.Write(data)
 	f.Close()
 
-	return fmt.Sprintf("%s%s", staticFilePath, name)
+	return fmt.Sprintf("%s%s", staticFilePath, name), ""
 }
 
 func (*FSMode) Path() string {

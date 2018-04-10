@@ -35,11 +35,12 @@ func (cdn *CDNMode) Setup() {
 	cdn.s3Client = s3Client
 }
 
-func (cdn *CDNMode) Write(data []byte, name string) string {
+func (cdn *CDNMode) Write(data []byte, name string) (string, string) {
 	resourceURL := cdn.Path()
 	bucket := core.GetEnv("AWS_BUCKET", "")
 
-	filePath := fmt.Sprintf("%s/%s/%s", name[0:2], name[2:4], name)
+	folder := fmt.Sprintf("%s/%s/", name[0:2], name[2:4])
+	filePath := fmt.Sprintf("%s%s", folder, name)
 	object := s3.PutObjectInput{
 		Body:        bytes.NewReader(data),
 		Bucket:      aws.String(bucket),
@@ -51,10 +52,10 @@ func (cdn *CDNMode) Write(data []byte, name string) string {
 
 	if err != nil {
 		log.Panic(err)
-		return ""
+		return "", ""
 	}
 
-	return fmt.Sprintf("%s%s", resourceURL, filePath)
+	return fmt.Sprintf("%s%s", resourceURL, filePath), folder
 }
 
 func (*CDNMode) Path() string {

@@ -32,8 +32,8 @@
     "service/s3",
     "service/sts"
   ]
-  revision = "61ac2e639a3e5f940b62693f2f1db515e4f0325e"
-  version = "v1.13.30"
+  revision = "9b0098a71f6d4d473a26ec8ad3c2feaac6eb1da6"
+  version = "v1.13.32"
 
 [[projects]]
   branch = "master"
@@ -80,7 +80,7 @@
   branch = "master"
   name = "github.com/sugoiuguu/go-glitch"
   packages = ["."]
-  revision = "4408cfe13cd9c57c4e3502523837250f38c93c56"
+  revision = "ba7ea183fff4a2c08c6e135d750b6c050f1ec7af"
 
 [[projects]]
   branch = "master"

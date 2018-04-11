@@ -1,7 +1,11 @@
 <form enctype="multipart/form-data" action="upload" method="post">
 	Expression: <input type="text" name="expression" value="128 & (c + 255) : (s ^ (c ^ 255)) + 25" />
+	{{ if .Error }}
+	<p style="color: red; margin: 2px;"><Strong>{{.Error}}</Strong></p>
+	{{ else }}
 	<br />
+	{{ end }}
 	<input type="file" name="uploadfile" />
-	<input type="hidden" name="token" value="{{.}}"/>
+	<input type="hidden" name="token" value="{{.Token}}"/>
 	<input type="submit" value="upload" />
 </form>

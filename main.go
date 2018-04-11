@@ -4,14 +4,13 @@ import (
 	"bytes"
 	"crypto/md5"
 	"fmt"
-	"html/template"
 	"image"
 	_ "image/jpeg"
 	"image/png"
 	"io"
 	"log"
 	"net/http"
-	"reflect"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -19,48 +18,52 @@ import (
 	"github.com/Toyz/GlitchyImageHTTP/core"
 	"github.com/Toyz/GlitchyImageHTTP/core/database"
 	"github.com/Toyz/GlitchyImageHTTP/core/filemodes"
+	"github.com/Toyz/GlitchyImageHTTP/core/tmplengine"
 	"github.com/globalsign/mgo/bson"
 	"github.com/gorilla/mux"
 	glitch "github.com/sugoiuguu/go-glitch"
-	"github.com/unrolled/render"
 )
 
 var allowedFileTypes = []string{"image/jpeg", "image/png"}
-var htmlRender *render.Render
 var saveMode filemodes.SaveMode
 
 func index(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		crutime := time.Now().Unix()
-		h := md5.New()
-		io.WriteString(h, strconv.FormatInt(crutime, 10))
-		token := fmt.Sprintf("%x", h.Sum(nil))
+	crutime := time.Now().Unix()
+	h := md5.New()
+	io.WriteString(h, strconv.FormatInt(crutime, 10))
+	token := fmt.Sprintf("%x", h.Sum(nil))
 
-		htmlRender.HTML(w, http.StatusOK, "index", token)
-	}
+	tmplengine.CntRender.HTML(w, http.StatusOK, "index", map[string]string{
+		"Error": r.URL.Query().Get("error"),
+		"Token": token,
+	})
 }
 
 func upload(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		r.ParseMultipartForm(32 << 20)
 		file, _, err := r.FormFile("uploadfile")
-		defer file.Close()
+		if err != nil {
+			http.Redirect(w, r, fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())), 302)
+			return
+		}
 
 		expression := r.FormValue("expression")
 		if err != nil {
-			log.Println(err)
+			http.Redirect(w, r, fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())), 302)
 			return
 		}
 
 		// Hack: This is hacky as all hell just to get the damn fileHeader form the bytes
 		cntType := core.GetMimeType(file)
 		if ok, _ := core.InArray(cntType, allowedFileTypes); !ok {
+			http.Redirect(w, r, fmt.Sprintf("/?error=%s", url.QueryEscape("File type is not allowed only PNG and JPEG allowed")), 302)
 			return
 		}
 
 		img, _, err := image.Decode(file)
 		if err != nil {
-			log.Println(err)
+			http.Redirect(w, r, fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())), 302)
 			return
 		}
 
@@ -68,13 +71,16 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 		expr, err := glitch.CompileExpression(expression)
 		if err != nil {
-			log.Println(err)
+			//log.Println(err)
+			// TODO: make this actually show on the home screen
+			// THIS REDIRECT IS ONLY HERE TEMP UNTIL WE WRITE A BETTER ERROR HANDLER... MAYBE USING A "HTTPERROR" STRUCT THAT IS JSON
+			http.Redirect(w, r, fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())), 302)
 			return
 		}
 
 		out, err := expr.JumblePixels(img)
 		if err != nil {
-			log.Println(err)
+			http.Redirect(w, r, fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())), 302)
 			return
 		}
 
@@ -98,9 +104,16 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		})
 
 		if err != nil {
-			log.Println(err)
+			http.Redirect(w, r, fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())), 302)
 			return
 		}
+
+		file.Close()
+		// Nil out values after we close the files
+		file = nil
+		buff = nil
+		img = nil
+		out = nil
 
 		http.Redirect(w, r, fmt.Sprintf("/%s", idx), 302)
 	}
@@ -121,39 +134,14 @@ func viewImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	htmlRender.HTML(w, http.StatusOK, "img", image)
-}
-
-func hasField(v interface{}, name string) bool {
-	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Ptr {
-		rv = rv.Elem()
-	}
-	if rv.Kind() != reflect.Struct {
-		return false
-	}
-	return rv.FieldByName(name).IsValid()
+	tmplengine.CntRender.HTML(w, http.StatusOK, "img", image)
 }
 
 func main() {
 	database.NewMongo()
+	tmplengine.New()
 
 	staticFilePath := core.GetEnv("HTTP_UPLOADS_URL", "/img/")
-
-	funcs := []template.FuncMap{
-		template.FuncMap{
-			"hasField": hasField,
-		},
-	}
-
-	htmlOptions := render.Options{
-		Directory:  core.GetTemplateFolder(),
-		Extensions: []string{".html"},
-		Layout:     "layout",
-		Funcs:      funcs,
-	}
-
-	htmlRender = render.New(htmlOptions)
 
 	saveMode = filemodes.GetFileMode()
 	saveMode.Setup()

@@ -43,15 +43,15 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		r.ParseMultipartForm(32 << 20)
 		file, _, err := r.FormFile("uploadfile")
+		defer file.Close()
+
 		if err != nil {
-			file = nil
 			http.Redirect(w, r, fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())), 302)
 			return
 		}
 
 		expression := r.FormValue("expression")
 		if err != nil {
-			file = nil
 			http.Redirect(w, r, fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())), 302)
 			return
 		}
@@ -59,17 +59,12 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		// Hack: This is hacky as all hell just to get the damn fileHeader form the bytes
 		cntType := core.GetMimeType(file)
 		if ok, _ := core.InArray(cntType, allowedFileTypes); !ok {
-			file.Close()
-			file = nil
 			http.Redirect(w, r, fmt.Sprintf("/?error=%s", url.QueryEscape("File type is not allowed only PNG and JPEG allowed")), 302)
 			return
 		}
 
 		img, _, err := image.Decode(file)
 		if err != nil {
-			file.Close()
-			img = nil
-			file = nil
 			http.Redirect(w, r, fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())), 302)
 			return
 		}
@@ -78,10 +73,6 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 		expr, err := glitch.CompileExpression(expression)
 		if err != nil {
-			file.Close()
-			buff = nil
-			img = nil
-			file = nil
 			//log.Println(err)
 			// TODO: make this actually show on the home screen
 			// THIS REDIRECT IS ONLY HERE TEMP UNTIL WE WRITE A BETTER ERROR HANDLER... MAYBE USING A "HTTPERROR" STRUCT THAT IS JSON
@@ -91,12 +82,6 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 		out, err := expr.JumblePixels(img)
 		if err != nil {
-			file.Close()
-			img = nil
-			out = nil
-			buff = nil
-			file = nil
-
 			http.Redirect(w, r, fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())), 302)
 			return
 		}
@@ -121,22 +106,9 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		})
 
 		if err != nil {
-			file.Close()
-			file = nil
-			buff = nil
-			img = nil
-			out = nil
-
 			http.Redirect(w, r, fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())), 302)
 			return
 		}
-
-		file.Close()
-		// Nil out values after we close the files
-		file = nil
-		buff = nil
-		img = nil
-		out = nil
 
 		http.Redirect(w, r, fmt.Sprintf("/%s", idx), 302)
 	}

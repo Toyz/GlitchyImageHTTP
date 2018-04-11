@@ -1,6 +1,8 @@
-FROM alpine:edge
-RUN apk --no-cache add ca-certificates
-RUN update-ca-certificates
+#FROM alpine:edge
+#RUN apk --no-cache add ca-certificates
+#RUN update-ca-certificates
+FROM scratch
+ADD ca-certificates.crt /etc/ssl/certs/
 
 ADD ./assets /assets
 

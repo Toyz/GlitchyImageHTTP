@@ -36,6 +36,18 @@
   version = "v1.13.30"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/globalsign/mgo"
+  packages = [
+    ".",
+    "bson",
+    "internal/json",
+    "internal/sasl",
+    "internal/scram"
+  ]
+  revision = "f76e4f9da92ecd56e3be26f5ba92580af1ef97b4"
+
+[[projects]]
   name = "github.com/go-ini/ini"
   packages = ["."]
   revision = "5e9692864e22d02ac79e2fa499cffb00520b4fea"
@@ -60,6 +72,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/sony/sonyflake"
+  packages = ["."]
+  revision = "fa881fb1052b152e977c41023052c2f2a1c475e9"
+
+[[projects]]
+  branch = "master"
   name = "github.com/sugoiuguu/go-glitch"
   packages = ["."]
   revision = "4408cfe13cd9c57c4e3502523837250f38c93c56"
@@ -73,6 +91,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "442c727967c1852f4715bbf146d452114c4179b32e77d9f2a00e089f9f01745c"
+  inputs-digest = "b9033d62310da1d71d0dc07dc5e6549848700404ad823f9a8bc08320bbf26d4f"
   solver-name = "gps-cdcl"
   solver-version = 1

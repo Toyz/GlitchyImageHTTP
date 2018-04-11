@@ -58,7 +58,11 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		img, _, _ := image.Decode(file)
+		img, _, err := image.Decode(file)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
 		buff := new(bytes.Buffer)
 
@@ -85,13 +89,18 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		session, c := database.MongoInstance.GetCollection()
 		defer session.Close()
 
-		c.Insert(&database.ArtItem{
+		err = c.Insert(&database.ArtItem{
 			ID:         idx,
 			FileName:   fileName,
 			Folder:     folder,
 			FullPath:   actualFileName,
 			Expression: expression,
 		})
+
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
 		http.Redirect(w, r, fmt.Sprintf("/%s", idx), 302)
 	}

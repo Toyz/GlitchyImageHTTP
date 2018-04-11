@@ -1,6 +1,8 @@
 package database
 
 import (
+	"log"
+
 	"github.com/Toyz/GlitchyImageHTTP/core"
 	"github.com/globalsign/mgo"
 )
@@ -16,7 +18,7 @@ var MongoInstance *mongo
 func NewMongo() {
 	session, err := mgo.Dial(core.GetEnv("MONGO_HOST", "localhost"))
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 	session.SetMode(mgo.Monotonic, true)
 

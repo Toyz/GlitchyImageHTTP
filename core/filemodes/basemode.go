@@ -1,14 +1,22 @@
 package filemodes
 
 import (
+	"fmt"
+
 	"github.com/Toyz/GlitchyImageHTTP/core"
-	"github.com/rs/xid"
+	"github.com/sony/sonyflake"
 )
 
 type SaveMode interface {
 	Setup()
 	Write([]byte, string) (string, string)
 	Path() string
+}
+
+var flaky *sonyflake.Sonyflake
+
+func init() {
+	flaky = sonyflake.NewSonyflake(sonyflake.Settings{})
 }
 
 func GetFileMode() SaveMode {
@@ -22,7 +30,7 @@ func GetFileMode() SaveMode {
 }
 
 func GetID(id string) string {
-	guid := xid.New()
+	idx, _ := flaky.NextID()
 
-	return guid.String()
+	return fmt.Sprintf("%x", idx)
 }

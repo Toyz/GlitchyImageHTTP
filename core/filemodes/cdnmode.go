@@ -51,7 +51,7 @@ func (cdn *CDNMode) Write(data []byte, name string) (string, string) {
 	_, err := cdn.s3Client.PutObject(&object)
 
 	if err != nil {
-		log.Panic(err)
+		log.Println(err)
 		return "", ""
 	}
 

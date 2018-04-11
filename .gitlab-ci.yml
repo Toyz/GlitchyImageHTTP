@@ -10,17 +10,18 @@ before_script:
   - sed -i -e 's/v[[:digit:]]\.[[:digit:]]/edge/g' /etc/apk/repositories
   - apk upgrade --update-cache --available
   - apk --no-cache add git gzip gcc musl-dev tree
-  - apk --no-cache add go
-  - mkdir -p /goSrc/src/github.com/Toyz
-  - cp -r /builds/Toyz/GlitchyImageHTTP /goSrc/src/github.com/Toyz
-  - export GOPATH=/goSrc
-  - go get -u github.com/golang/dep/cmd/dep
-  - export PATH=$PATH:/goSrc/bin
-  - cd /goSrc/src/github.com/Toyz/GlitchyImageHTTP
 
 build:
   stage: build
   script:
+    - export GOPATH=/goSrc
+    - export PATH=$PATH:/goSrc/bin
+    - mkdir -p /goSrc/src/github.com/Toyz
+    - cp -r /builds/Toyz/GlitchyImageHTTP /goSrc/src/github.com/Toyz
+    - cd /goSrc/src/github.com/Toyz/GlitchyImageHTTP
+    - apk --no-cache add go
+    - go get -u github.com/golang/dep/cmd/dep
+    - update-ca-certificates
     - cp /etc/ssl/certs/ca-certificates.crt ca-certificates.crt 
     - dep ensure
     - CGO_ENABLED=0 GOOS=linux go build  -ldflags '-w -s' -a -installsuffix cgo -o pw

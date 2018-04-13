@@ -19,6 +19,7 @@ import (
 	"github.com/Toyz/GlitchyImageHTTP/core/database"
 	"github.com/Toyz/GlitchyImageHTTP/core/filemodes"
 	"github.com/Toyz/GlitchyImageHTTP/core/tmplengine"
+	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"github.com/gorilla/mux"
 	glitch "github.com/sugoiuguu/go-glitch"
@@ -96,6 +97,15 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 		session, c := database.MongoInstance.GetCollection()
 		defer session.Close()
+
+		index := mgo.Index{
+			Key:        []string{"id", "filename"},
+			Unique:     true,
+			DropDups:   true,
+			Background: true,
+			Sparse:     true,
+		}
+		c.EnsureIndex(index)
 
 		err = c.Insert(&database.ArtItem{
 			ID:         idx,

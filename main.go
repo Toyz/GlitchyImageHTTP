@@ -91,7 +91,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 		md5Sum := core.GetMD5(buff.Bytes())
 		idx := filemodes.GetID(md5Sum)
-		fileName := fmt.Sprintf("%x.png", md5Sum)
+		fileName := fmt.Sprintf("%s.png", md5Sum)
 
 		actualFileName, folder := saveMode.Write(buff.Bytes(), fileName)
 

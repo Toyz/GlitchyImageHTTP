@@ -1,6 +1,7 @@
 package core
 
 import (
+	"bufio"
 	"encoding/hex"
 	"hash/crc32"
 	"io"
@@ -126,6 +127,30 @@ func (v *AssetTools) FileContents(fp string) string {
 	by, _ := ioutil.ReadFile(fp)
 
 	return string(by)
+}
+
+// # is always a comment in all files we read by lines...
+func (v *AssetTools) ReadFileLines(path string) ([]string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var lines []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+
+		if len(line) <= 0 {
+			continue
+		}
+
+		if !strings.HasPrefix(line, "#") {
+			lines = append(lines, line)
+		}
+	}
+	return lines, scanner.Err()
 }
 
 func fileExist(name string) bool {

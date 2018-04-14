@@ -1,6 +1,7 @@
 package routing
 
 type HomePage struct {
-	Token string
-	Error string
+	Token      string
+	Error      string
+	Expression string
 }

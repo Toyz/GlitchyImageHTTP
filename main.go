@@ -9,6 +9,7 @@ import (
 	"image/png"
 	"io"
 	"log"
+	"math/rand"
 	"net/url"
 	"regexp"
 	"strconv"
@@ -37,6 +38,7 @@ import (
 
 var allowedFileTypes = []string{"image/jpeg", "image/png"}
 var saveMode filemodes.SaveMode
+var defaultExpressions []string
 
 func Index(ctx iris.Context) {
 	crutime := time.Now().Unix()
@@ -45,8 +47,9 @@ func Index(ctx iris.Context) {
 	token := fmt.Sprintf("%x", h.Sum(nil))
 
 	ctx.ViewData("Home", routing.HomePage{
-		Error: ctx.URLParam("error"),
-		Token: token,
+		Error:      ctx.URLParam("error"),
+		Token:      token,
+		Expression: defaultExpressions[rand.Intn(len(defaultExpressions))],
 	})
 	ctx.View("index.html")
 }
@@ -164,10 +167,14 @@ func ViewImage(ctx iris.Context) {
 }
 
 func main() {
+	rand.Seed(time.Now().Unix())
+
 	database.NewMongo()
 	core.Render.New()
 	core.AssetManager.New()
+
 	saveMode = filemodes.GetFileMode()
+	defaultExpressions, _ = core.AssetManager.ReadFileLines("./assets/glitches.txt")
 
 	app := iris.New()
 

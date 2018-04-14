@@ -76,6 +76,14 @@ func (render *render) Defaults() *render {
 		return len(a) > b
 	})
 
+	render.AddFunc("lessThan", func(a string, b int) bool {
+		return len(a) < b
+	})
+
+	render.AddFunc("equalTo", func(a string, b int) bool {
+		return len(a) == b
+	})
+
 	render.AddFunc("raw", func(a string) template.HTML {
 		tmpl, _ := render.minify.String("text/html", a)
 

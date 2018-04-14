@@ -3,7 +3,9 @@ package filemodes
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/Toyz/GlitchyImageHTTP/core"
@@ -56,6 +58,23 @@ func (cdn *CDNMode) Write(data []byte, name string) (string, string) {
 	}
 
 	return fmt.Sprintf("%s%s", resourceURL, filePath), folder
+}
+
+func (cdn *CDNMode) Read(path string) []byte {
+	folder := fmt.Sprintf("%s/%s/", path[0:2], path[2:4])
+	url := fmt.Sprintf("%s%s%s", cdn.Path(), folder, path)
+
+	response, err := http.Get(url)
+	if err != nil {
+		fmt.Println("Error while downloading", url, "-", err)
+		return make([]byte, 0)
+	}
+	defer response.Body.Close()
+
+	buff := new(bytes.Buffer)
+	io.Copy(buff, response.Body)
+
+	return buff.Bytes()
 }
 
 func (*CDNMode) Path() string {

@@ -10,6 +10,7 @@ import (
 type SaveMode interface {
 	Setup()
 	Write([]byte, string) (string, string)
+	Read(string) []byte
 	Path() string
 }
 

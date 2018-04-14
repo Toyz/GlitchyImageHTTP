@@ -27,6 +27,10 @@ func (fs *FSMode) Write(data []byte, name string) (string, string) {
 	return fmt.Sprintf("%s%s", staticFilePath, name), ""
 }
 
+func (fs *FSMode) Read(path string) []byte {
+	return make([]byte, 0)
+}
+
 func (*FSMode) Path() string {
 	return core.GetEnv("FS_UPLOADS_FOLDER", fmt.Sprintf("%s%s", core.AssetsFolder(), "uploads"))
 }

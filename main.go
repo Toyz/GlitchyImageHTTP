@@ -164,10 +164,13 @@ func ViewImage(ctx iris.Context) {
 		log.Println(err)
 	}
 
+	image.FullPath = fmt.Sprintf("%s://%s/%s/%s", "https", ctx.Host(), "img", image.FileName)
+
 	data := ctx.GetViewData()["Header"].(core.HeaderMetaData)
 	header := core.Render.Header(fmt.Sprintf("%s - View Image %s", data.Title, image.ID), image.FullPath, data.Desc, image.ID)
 	header.ImageHeight = image.Height
 	header.ImageWidth = image.Width
+
 	ctx.ViewData("Header", header)
 	ctx.ViewData("Data", image)
 	ctx.ViewData("BodyClass", "image")
@@ -210,7 +213,20 @@ func main() {
 	app.Get("/", Index)
 	app.Post("/upload", Upload)
 	app.Get("/{image:string}", ViewImage)
+	switch core.GetSaveMode() {
+	case "aws":
+		app.Get("/img/{file:string}", func(ctx iris.Context) {
+			data := saveMode.Read(ctx.Params().Get("file"))
+
+			ctx.Header("content-type", "image/png")
+			ctx.Write(data)
+		})
+		break
+	case "fs":
+		app.StaticWeb("/img", "./assets/uploads")
+	}
 	app.StaticWeb("/static", "./assets/public")
+
 	app.Build()
 
 	m := minify.New()

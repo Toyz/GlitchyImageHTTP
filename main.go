@@ -113,6 +113,8 @@ func upload(w http.ResponseWriter, r *http.Request) {
 			Folder:     folder,
 			FullPath:   actualFileName,
 			Expression: expression,
+			Views:      0,
+			Uploaded:   time.Now(),
 		})
 
 		if err != nil {
@@ -139,6 +141,14 @@ func viewImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	change := mgo.Change{
+		Update:    bson.M{"$inc": bson.M{"views": 1}},
+		ReturnNew: false,
+	}
+	_, err := c.Find(bson.M{"id": id}).Apply(change, &image)
+	if err != nil {
+		log.Println(err)
+	}
 	tmplengine.CntRender.HTML(w, http.StatusOK, "img", image)
 }
 

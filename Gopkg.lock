@@ -60,6 +60,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/c2h5oh/datasize"
+  packages = ["."]
+  revision = "4eba002a5eaea69cf8d235a388fc6b65ae68d2dd"
+
+[[projects]]
+  branch = "master"
   name = "github.com/eknkc/amber"
   packages = [
     ".",
@@ -362,6 +368,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f018d50ac2eb55f93faf4a53ff4e72736f97e67a28245e6f9168299ba5b12ce0"
+  inputs-digest = "3430ee0be546f83020c559fc6d7f1d17c98e8ee69c0ed6cf6cc4224ef9014614"
   solver-name = "gps-cdcl"
   solver-version = 1

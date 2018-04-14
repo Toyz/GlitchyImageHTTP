@@ -56,7 +56,7 @@ func Index(ctx iris.Context) {
 }
 
 func Upload(ctx iris.Context) {
-	//ctx.ParseMultipartForm(32 << 20)
+	ctx.SetMaxRequestBodySize(15 << 20) // 15mb
 	file, _, err := ctx.FormFile("uploadfile")
 	defer file.Close()
 
@@ -180,6 +180,7 @@ func main() {
 	saveMode = filemodes.GetFileMode()
 	defaultExpressions, _ = core.AssetManager.ReadFileLines("./assets/glitches.txt")
 
+	//iris.WithPostMaxMemory((10 * datasize.MB).Bytes())
 	app := iris.New()
 
 	app.Logger().SetLevel("debug")

@@ -170,6 +170,8 @@ func ViewImage(ctx iris.Context) {
 	header.ImageWidth = image.Width
 	ctx.ViewData("Header", header)
 	ctx.ViewData("Data", image)
+	ctx.ViewData("BodyClass", "image")
+
 	ctx.View("img.html")
 }
 
@@ -196,6 +198,8 @@ func main() {
 			"A powerful website to glitch art using custom expressions",
 			"",
 		))
+
+		ctx.ViewData("BodyClass", "index")
 
 		ctx.Next()
 	})

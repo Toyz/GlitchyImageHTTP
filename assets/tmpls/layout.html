@@ -23,11 +23,7 @@
     <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="https://ajax.cloudflare.com/cdn-cgi/scripts/935cb224/cloudflare-static/rocket.min.js"></script>
   </head>
-  {{ if hasField . "ID" }}
-    <body class="image">
-  {{ else }}
-    <body class="index">
-  {{ end }}
+  <body class="{{ .BodyClass }}">
     <section class="header">
       <div class="container">
         <div class="row">

@@ -96,11 +96,13 @@ func Upload(ctx iris.Context) {
 
 	out, err := expr.JumblePixels(img)
 	if err != nil {
+		out = nil
 		ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
 		return
 	}
 
 	png.Encode(buff, out)
+	out = nil
 
 	md5Sum := core.GetMD5(buff.Bytes())
 	idx := filemodes.GetID(md5Sum)
@@ -134,10 +136,12 @@ func Upload(ctx iris.Context) {
 	})
 
 	if err != nil {
+		buff = nil
 		ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
 		return
 	}
 
+	buff = nil
 	ctx.Redirect(fmt.Sprintf("/%s", idx))
 }
 

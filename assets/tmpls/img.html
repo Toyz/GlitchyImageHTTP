@@ -1,12 +1,12 @@
 <section class="image">
   <div class="container">
     <div class="row">
-      <h4>>> view_image.(id = {{.ID}})</h4>
-      <h4>>> expression = " {{.Expression}} "</h4>
-      <h4>>> total_views = {{.Views}}</h4>
-      <h4>>> uploaded_on = " {{.Uploaded}} "</h4>
+      <h4>>> view_image.(id = {{.Data.ID}})</h4>
+      <h4>>> expression = " {{.Data.Expression}} "</h4>
+      <h4>>> total_views = {{.Data.Views}}</h4>
+      <h4>>> uploaded_on = " {{.Data.Uploaded}} "</h4>
       <div class="display">
-        <img src="{{.FullPath}}" />
+        <img src="{{.Data.FullPath}}" />
       </div>
     </div>
   </div>

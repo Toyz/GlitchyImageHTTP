@@ -8,8 +8,8 @@
         </label>
         <input type="text" name="expression" value="128 & (c + 255) : (s ^ (c ^ 255)) + 25" class="expression" />
         <span>" )</span>
-        {{ if .Error }}
-          <p class="error"><Strong>error: {{.Error}}</Strong></p>
+        {{ if .Home.Error }}
+          <p class="error"><Strong>error: {{.Home.Error}}</Strong></p>
         {{ end }}
         <div class="fileUpload">
           <div class="chooseFile">>> choose_file.(</div>
@@ -17,7 +17,7 @@
           <input type="file" name="uploadfile" class="uploadFile" id="uploadFile" />
           <script type="text/javascript" src="./static/js/fileUpload.js"></script>
         </div>
-        <input type="hidden" name="token" value="{{.Token}}" />
+        <input type="hidden" name="token" value="{{.Home.Token}}" />
         <input type="submit" value=">> upload.()" class="submit" />
       </form>
     </div>

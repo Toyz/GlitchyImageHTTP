@@ -1,10 +1,14 @@
 <!doctype html>
 <html>
   <head>
-    {{ if hasField . "ID" }}
-      <title>Go Glitch - Viewing image {{.ID}}</title>
-    {{ else }}
-      <title>Go Glitch</title>
+    <title>{{ .Header.Title }}</title>
+    <meta name="description" content="{{.Header.Desc}}" />
+    <meta name="og:description" content="{{.Header.Desc}}" />
+    <meta name="og:title" content="{{.Header.Title}}" />
+    <meta name="og:site_name" content="{{.Header.SiteName}}" />
+    <meta name="og:url" content="https://glitch.blizztrack.com/{{ .Header.URL }}" />
+    {{ if .Header.Image }}
+    <meta name="og:image" content="{{.Header.Image}}"/>
     {{ end }}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

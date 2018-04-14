@@ -20,13 +20,17 @@ func init() {
 }
 
 func GetFileMode() SaveMode {
+	var mode SaveMode
+
 	switch core.GetSaveMode() {
 	case "fs":
-		return &FSMode{}
+		mode = &FSMode{}
 	case "aws":
-		return &CDNMode{}
+		mode = &CDNMode{}
 	}
-	return &FSMode{}
+
+	mode.Setup()
+	return mode
 }
 
 func GetID(id string) string {

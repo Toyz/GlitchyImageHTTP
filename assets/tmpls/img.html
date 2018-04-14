@@ -3,6 +3,12 @@
     <div class="row">
       <h4>>> view_image.(id = {{.Data.ID}})</h4>
       <h4>>> expression = " {{.Data.Expression}} "</h4>
+      {{ if gr .Data.FileSize 0 }}
+      <h4>>> image_size = " {{ formatFS .Data.FileSize }} "</h4>  
+      {{ end }}    
+      {{ if (gr .Data.Width 0) and (gr .Data.Height 0)}}
+      <h4>>> image_bounds = " {{ .Data.Width }} x {{ .Data.Height }} "</h4> 
+      {{ end }}     
       <h4>>> total_views = {{.Data.Views}}</h4>
       <h4>>> uploaded_on = " {{.Data.Uploaded}} "</h4>
       <div class="display">

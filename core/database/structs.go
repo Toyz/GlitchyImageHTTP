@@ -10,4 +10,7 @@ type ArtItem struct {
 	Expression string    `json:"expression"`
 	Views      int       `json:"views"`
 	Uploaded   time.Time `json:"uploaded_on"`
+	FileSize   int       `json:"file_size"`
+	Width      int       `json:"width"`
+	Height     int       `json:"height"`
 }

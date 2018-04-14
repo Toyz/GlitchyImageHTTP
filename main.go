@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"crypto/md5"
+	"encoding/binary"
 	"fmt"
 	"image"
 	_ "image/jpeg"
@@ -127,6 +128,9 @@ func Upload(ctx iris.Context) {
 		Expression: expression,
 		Views:      0,
 		Uploaded:   time.Now(),
+		FileSize:   binary.Size(buff.Bytes()),
+		Width:      out.Bounds().Max.X,
+		Height:     out.Bounds().Max.Y,
 	})
 
 	if err != nil {

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/c2h5oh/datasize"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/view"
 	"github.com/tdewolff/minify"
@@ -152,6 +153,10 @@ func (render *render) Defaults() *render {
 			return false
 		}
 		return rv.FieldByName(name).IsValid()
+	})
+
+	render.AddFunc("formatFS", func(size int) string {
+		return datasize.ByteSize(size).HR()
 	})
 
 	return render

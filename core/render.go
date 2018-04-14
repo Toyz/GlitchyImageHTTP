@@ -24,11 +24,13 @@ type (
 	}
 
 	HeaderMetaData struct {
-		Title    string
-		Image    string
-		Desc     string
-		SiteName string
-		URL      string
+		Title       string
+		Image       string
+		Desc        string
+		SiteName    string
+		URL         string
+		ImageWidth  int
+		ImageHeight int
 	}
 )
 
@@ -170,6 +172,6 @@ func (render *render) New() *render {
 
 func (render *render) Header(title, logo, desc, ogUrl string) HeaderMetaData {
 	return HeaderMetaData{
-		title, logo, desc, "Go Glitch", ogUrl,
+		title, logo, desc, "Go Glitch", ogUrl, 0, 0,
 	}
 }

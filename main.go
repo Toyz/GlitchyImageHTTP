@@ -165,7 +165,10 @@ func ViewImage(ctx iris.Context) {
 	}
 
 	data := ctx.GetViewData()["Header"].(core.HeaderMetaData)
-	ctx.ViewData("Header", core.Render.Header(fmt.Sprintf("%s - View Image %s", data.Title, image.ID), image.FullPath, data.Desc, image.ID))
+	header := core.Render.Header(fmt.Sprintf("%s - View Image %s", data.Title, image.ID), image.FullPath, data.Desc, image.ID)
+	header.ImageHeight = image.Height
+	header.ImageWidth = image.Width
+	ctx.ViewData("Header", header)
 	ctx.ViewData("Data", image)
 	ctx.View("img.html")
 }

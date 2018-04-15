@@ -102,6 +102,7 @@ func Upload(ctx iris.Context) {
 	}
 
 	png.Encode(buff, out)
+	bounds := out.Bounds()
 	out = nil
 
 	md5Sum := core.GetMD5(buff.Bytes())
@@ -131,8 +132,8 @@ func Upload(ctx iris.Context) {
 		Views:      0,
 		Uploaded:   time.Now(),
 		FileSize:   binary.Size(buff.Bytes()),
-		Width:      out.Bounds().Max.X,
-		Height:     out.Bounds().Max.Y,
+		Width:      bounds.Max.X,
+		Height:     bounds.Max.Y,
 	})
 
 	if err != nil {

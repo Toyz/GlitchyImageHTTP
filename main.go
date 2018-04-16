@@ -48,7 +48,7 @@ func Index(ctx iris.Context) {
 	token := fmt.Sprintf("%x", h.Sum(nil))
 
 	ctx.ViewData("Home", routing.HomePage{
-		Error:      ctx.URLParam("error"),
+		Error:      "",//ctx.URLParam("error"),
 		Token:      token,
 		Expression: defaultExpressions[rand.Intn(len(defaultExpressions))],
 	})

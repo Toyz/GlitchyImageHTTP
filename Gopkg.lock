@@ -278,7 +278,7 @@
   branch = "master"
   name = "github.com/sugoiuguu/go-glitch"
   packages = ["."]
-  revision = "7419cb7157c1a08983dadd42e992b61b605494a0"
+  revision = "30c90144b53c6506c49678e4fdeb9e12fd27958a"
 
 [[projects]]
   name = "github.com/tdewolff/minify"
@@ -342,7 +342,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "f6f352972f061230a99fbf49d1eb8073ebdb36cb"
+  revision = "2281fa97ef7b0c26324634d5a22f04babdac8713"
 
 [[projects]]
   name = "gopkg.in/AlecAivazis/survey.v1"

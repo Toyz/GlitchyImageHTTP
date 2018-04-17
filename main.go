@@ -86,7 +86,6 @@ func Upload(ctx iris.Context) {
 		ctx.JSON(&routing.UploadResult{
 			Error: "File type is not allowed only PNG and JPEG allowed",
 		})
-		//ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape("File type is not allowed only PNG and JPEG allowed")))
 		return
 	}
 
@@ -94,6 +93,14 @@ func Upload(ctx iris.Context) {
 	if err != nil {
 		ctx.JSON(&routing.UploadResult{
 			Error: err.Error(),
+		})
+		return
+	}
+
+	if (img.Bounds().Max.X * img.Bounds().Max.Y) > (1920 * 1080) {
+		img = nil
+		ctx.JSON(&routing.UploadResult{
+			Error: "Max image size is 1920x1080 (1080p)",
 		})
 		return
 	}
@@ -116,7 +123,6 @@ func Upload(ctx iris.Context) {
 		newImage, err := expr.JumblePixels(out)
 		if err != nil {
 			out = nil
-			//ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
 			ctx.JSON(&routing.UploadResult{
 				Error: err.Error(),
 			})

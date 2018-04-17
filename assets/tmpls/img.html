@@ -2,7 +2,13 @@
   <div class="container">
     <div class="row">
       <h4>>> view_image.(id = {{.Data.ID}})</h4>
+      {{ if longerThan .Data.Expression 0 }}
       <h4>>> expression = " {{.Data.Expression}} "</h4>
+      {{ else }}
+      {{ range $index, $value := .Data.Expressions }}
+      <h4>>> expression[{{$index}}] = " {{$value}} "</h4>
+      {{ end }}
+      {{ end }}
       {{ if gr .Data.FileSize 0 }}
       <h4>>> image_size = " {{ formatFS .Data.FileSize }} "</h4>  
       {{ end }}    

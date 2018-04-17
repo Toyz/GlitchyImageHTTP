@@ -11,9 +11,9 @@ import (
 	"io"
 	"log"
 	"math/rand"
-	"net/url"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Toyz/GlitchyImageHTTP/core"
@@ -48,7 +48,7 @@ func Index(ctx iris.Context) {
 	token := fmt.Sprintf("%x", h.Sum(nil))
 
 	ctx.ViewData("Home", routing.HomePage{
-		Error:      ctx.URLParam("error"),
+		Error:      "", //ctx.URLParam("error"),
 		Token:      token,
 		Expression: defaultExpressions[rand.Intn(len(defaultExpressions))],
 	})
@@ -61,49 +61,74 @@ func Upload(ctx iris.Context) {
 	defer file.Close()
 
 	if err != nil {
-		ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
+		//ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
+		ctx.JSON(&routing.UploadResult{
+			Error: err.Error(),
+		})
 		return
 	}
 
-	expression := ctx.FormValue("expression")
-	if err != nil {
-		ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
-		return
+	expressions := make([]string, 0)
+	exps := ctx.FormValues()
+	for k, v := range exps {
+		if strings.EqualFold(k, "expression") {
+			for _, item := range v {
+				if len(strings.TrimSpace(item)) > 0 {
+					expressions = append(expressions, item)
+				}
+			}
+		}
 	}
 
 	// Hack: This is hacky as all hell just to get the damn fileHeader form the bytes
 	cntType := core.GetMimeType(file)
 	if ok, _ := core.InArray(cntType, allowedFileTypes); !ok {
-		ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape("File type is not allowed only PNG and JPEG allowed")))
+		ctx.JSON(&routing.UploadResult{
+			Error: "File type is not allowed only PNG and JPEG allowed",
+		})
+		//ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape("File type is not allowed only PNG and JPEG allowed")))
 		return
 	}
 
 	img, _, err := image.Decode(file)
 	if err != nil {
-		ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
+		ctx.JSON(&routing.UploadResult{
+			Error: err.Error(),
+		})
 		return
 	}
 
 	buff := new(bytes.Buffer)
+	out := img
 
-	expr, err := glitch.CompileExpression(expression)
-	if err != nil {
-		// TODO: make this actually show on the home screen
-		// THIS REDIRECT IS ONLY HERE TEMP UNTIL WE WRITE A BETTER ERROR HANDLER... MAYBE USING A "HTTPERROR" STRUCT THAT IS JSON
-		ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
-		return
+	for _, expression := range expressions {
+		expr, err := glitch.CompileExpression(expression)
+		if err != nil {
+			// TODO: make this actually show on the home screen
+			// THIS REDIRECT IS ONLY HERE TEMP UNTIL WE WRITE A BETTER ERROR HANDLER... MAYBE USING A "HTTPERROR" STRUCT THAT IS JSON
+			//ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
+			ctx.JSON(&routing.UploadResult{
+				Error: err.Error(),
+			})
+			return
+		}
+
+		newImage, err := expr.JumblePixels(out)
+		if err != nil {
+			out = nil
+			//ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
+			ctx.JSON(&routing.UploadResult{
+				Error: err.Error(),
+			})
+			return
+		}
+		out = newImage
+		newImage = nil
 	}
-
-	out, err := expr.JumblePixels(img)
-	if err != nil {
-		out = nil
-		ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
-		return
-	}
-
 	png.Encode(buff, out)
 	bounds := out.Bounds()
 	out = nil
+	img = nil
 
 	md5Sum := core.GetMD5(buff.Bytes())
 	idx := filemodes.GetID(md5Sum)
@@ -123,27 +148,39 @@ func Upload(ctx iris.Context) {
 	}
 	c.EnsureIndex(index)
 
+	expression := ""
+	if len(expressions) == 1 {
+		expression = expressions[0]
+	}
+
 	err = c.Insert(&database.ArtItem{
-		ID:         idx,
-		FileName:   fileName,
-		Folder:     folder,
-		FullPath:   actualFileName,
-		Expression: expression,
-		Views:      0,
-		Uploaded:   time.Now(),
-		FileSize:   binary.Size(buff.Bytes()),
-		Width:      bounds.Max.X,
-		Height:     bounds.Max.Y,
+		ID:          idx,
+		FileName:    fileName,
+		Folder:      folder,
+		FullPath:    actualFileName,
+		Expression:  expression,
+		Expressions: expressions,
+		Views:       0,
+		Uploaded:    time.Now(),
+		FileSize:    binary.Size(buff.Bytes()),
+		Width:       bounds.Max.X,
+		Height:      bounds.Max.Y,
 	})
 
 	if err != nil {
 		buff = nil
-		ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
+		//ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
+		ctx.JSON(&routing.UploadResult{
+			Error: err.Error(),
+		})
 		return
 	}
 
 	buff = nil
-	ctx.Redirect(fmt.Sprintf("/%s", idx))
+	ctx.JSON(&routing.UploadResult{
+		ID: idx,
+	})
+	//ctx.Redirect(fmt.Sprintf("/%s", idx))
 }
 
 func ViewImage(ctx iris.Context) {

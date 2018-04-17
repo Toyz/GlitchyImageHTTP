@@ -1,0 +1,46 @@
+/* Form styling */
+.expression
+  display: inline-block
+  color: $foreground-color
+  background-color: $background-color
+  border: none
+  border-bottom: 1px dashed $foreground-color
+  width: 60%
+  max-width: 80%
+  margin-bottom: 1em
+  font-family: inherit
+.submit
+  display: block
+  text-align: left
+  margin-left: -6px
+  margin-top: 1em !important
+  cursor: pointer
+  font-size: $font-size
+  &:hover
+    color: $highlight-color
+.fileUpload
+  overflow: hidden
+  position: relative
+  vertical-align: middle
+  color: $foreground-color
+  background-color: $background-color
+  cursor: pointer
+.uploadFile
+  z-index: 100
+  cursor: pointer
+  position: absolute
+  height: 100%
+  width: 100%
+  top: 0
+  left: -6.5em
+  opacity: 0
+  filter: alpha(opacity=0)
+.submit,
+.uploadFile
+  background-color: $background-color
+  font-family: inherit
+  color: inherit
+  border: none
+.fileName,
+.chooseFile
+  display: inline-block

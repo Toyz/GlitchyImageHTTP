@@ -1,0 +1,40 @@
+/* glitched text styling */
+
+@keyframes noise-anim
+  $steps: 20
+  @for $i from 0 through $steps
+    #{percentage($i*(1/$steps))}
+      clip: rect(random(100)+px,9999px,random(100)+px,0)
+
+@keyframes noise-anim-2
+  $steps: 20
+  @for $i from 0 through $steps
+    #{percentage($i*(1/$steps))}
+      clip: rect(random(100)+px,9999px,random(100)+px,0)
+
+.glitch
+  position: relative
+  &::after,
+  &::before
+    content: attr(data-text)
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+  &::before
+    left: -2px
+    text-shadow: 1px 0 blue
+    color: white
+    background: black
+    overflow: hidden
+    clip: rect(0, 900px, 0, 0)
+    animation: noise-anim-2 3s infinite linear alternate-reverse
+  &::after
+    left: 2px
+    text-shadow: -1px 0 red
+    color: white
+    background: black
+    overflow: hidden
+    clip: rect(0, 900px, 0, 0)
+    animation: noise-anim 2s infinite linear alternate-reverse

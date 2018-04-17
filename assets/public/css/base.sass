@@ -1,0 +1,55 @@
+/*
+ * Base SASS for glitch.blizztrack.com
+ */
+
+/* Vars and imports */
+@import url('https://fonts.googleapis.com/css?family=Anonymous+Pro')
+$fonts: 'Anonymous Pro', monospace, sans-serif
+$background-color: #000
+$foreground-color: #4BC440
+$highlight-color: #fff
+$font-size: 9pt
+
+/* Base element styling */
+body
+  margin: 0
+  background-color: $background-color
+  color: $foreground-color
+  font:
+    size: $font-size
+    family: $fonts
+.container
+  margin: 0 auto
+  padding: 2rem 0
+  width: 100%
+  position: relative
+  @media (max-width: 399px)
+    width: 90%
+  @media (min-width: 400px)
+    width: 85%
+  @media (min-width: 550px)
+    width: 80%
+.header
+  text-align: center
+  a
+    color: $highlight-color
+    text-decoration: none
+.container:after,
+.row:after
+  content: ""
+  clear: both
+  display: table
+
+/* Sections */
+.upload
+  margin: 5em
+.display
+  width: 100%
+  margin-top: 5.5em
+  text-align: center
+  img
+    width: 100%
+
+/* Import form CSS and glitch CSS */
+@import glitch
+@import form

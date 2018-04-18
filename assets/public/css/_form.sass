@@ -7,17 +7,9 @@
   border-bottom: 1px dashed $foreground-color
   width: 60%
   max-width: 80%
-  margin-bottom: 1em
   font-family: inherit
-.submit
-  display: block
-  text-align: left
-  margin-left: -6px
-  margin-top: 1em !important
-  cursor: pointer
-  font-size: $font-size
-  &:hover
-    color: $highlight-color
+.expressionForm:last-child
+  margin-bottom: 1em
 .fileUpload
   overflow: hidden
   position: relative
@@ -25,6 +17,7 @@
   color: $foreground-color
   background-color: $background-color
   cursor: pointer
+  margin-bottom: 1em
 .uploadFile
   z-index: 100
   cursor: pointer
@@ -35,12 +28,21 @@
   left: -6.5em
   opacity: 0
   filter: alpha(opacity=0)
-.submit,
-.uploadFile
+.button
   background-color: $background-color
   font-family: inherit
   color: inherit
   border: none
+  display: block
+  text-align: left
+  margin-top: 1em !important
+  cursor: pointer
+  font-size: $font-size
+  padding: 0
+  &:hover
+    color: $highlight-color
+.addExpr, .removeExpr
+  margin-left: 2em !important
 .fileName,
 .chooseFile
   display: inline-block

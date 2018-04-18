@@ -1,36 +1,31 @@
 <section class="upload">
   <div class="container">
     <div class="row">
-      <h2>>> pick_an_image</h2>
-      <form enctype="multipart/form-data" action="upload" method="post">
-        <label for="expression">
-          <span>>> expression.( "</span>
-        </label>
-        <input type="text" name="expression" value="{{ .Home.Expression }}" class="expression" />
-        <span>" )</span>
-        <br />
-        <label for="expression">
-          <span>>> expression.( "</span>
-        </label>
-        <input type="text" name="expression" value="{{ .Home.Expression }}" class="expression" />
-        <span>" )</span>
-        <br />
-        <label for="expression">
-          <span>>> expression.( "</span>
-        </label>
-        <input type="text" name="expression" value="{{ .Home.Expression }}" class="expression" />
-        <span>" )</span>
+      <h2>>> glitch_your_image</h2>
+      <form id="uploadForm" enctype="multipart/form-data" action="upload" method="post">
         {{ if .Home.Error }}
-          <p class="error"><Strong>error: {{.Home.Error}}</Strong></p>
+          <p class="error">error: {{.Home.Error}}</p>
         {{ end }}
+        <script type="text/javascript" src="./static/js/formSubmitHandler.js"></script>
         <div class="fileUpload">
           <div class="chooseFile">>> choose_file.(</div>
           <div class="fileName">...</div> )
           <input type="file" name="uploadfile" class="uploadFile" id="uploadFile" />
           <script type="text/javascript" src="./static/js/fileUpload.js"></script>
         </div>
+        <div class="expressionList" id="expressionList">
+          <script type="text/javascript" src="./static/js/addExpression.js"></script>
+          <div class="expressionForm">
+            <label for="expression">
+              <span>>> expression.( "</span>
+            </label>
+            <input type="text" name="expression" value="{{ .Home.Expression }}" class="expression" />
+            <span>" )</span>
+          </div>
+          <input type="button" class="button addExpr" value=">> add.expr.optional(...)" onClick="addInput('expressionList');">
+        </div>
         <input type="hidden" name="token" value="{{.Home.Token}}" />
-        <input type="submit" value=">> upload.()" class="submit" />
+        <input type="submit" value=">> upload.()" class="button submit" />
       </form>
     </div>
   </div>

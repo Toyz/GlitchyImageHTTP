@@ -8,6 +8,7 @@ $fonts: 'Anonymous Pro', monospace, sans-serif
 $background-color: #000
 $foreground-color: #4BC440
 $highlight-color: #fff
+$error-color: #D33131
 $font-size: 9pt
 
 /* Base element styling */
@@ -39,6 +40,10 @@ body
   content: ""
   clear: both
   display: table
+p
+  .error
+    color: $error-color
+    font-weight: 700
 
 /* Sections */
 .upload
@@ -48,7 +53,7 @@ body
   margin-top: 5.5em
   text-align: center
   img
-    width: 100%
+    max-width: 100%
 
 /* Import form CSS and glitch CSS */
 @import glitch

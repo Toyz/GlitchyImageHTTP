@@ -80,6 +80,13 @@ func Upload(ctx iris.Context) {
 		}
 	}
 
+	if len(expressions) > 5 {
+		ctx.JSON(&routing.UploadResult{
+			Error: "Only 5 expressions are allowed",
+		})
+		return
+	}
+
 	// Hack: This is hacky as all hell just to get the damn fileHeader form the bytes
 	cntType := core.GetMimeType(file)
 	if ok, _ := core.InArray(cntType, allowedFileTypes); !ok {

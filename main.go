@@ -58,10 +58,15 @@ func Index(ctx iris.Context) {
 func Upload(ctx iris.Context) {
 	ctx.SetMaxRequestBodySize(5 << 20) // 5mb
 	file, _, err := ctx.FormFile("uploadfile")
+	if file == nil {
+		ctx.JSON(&routing.UploadResult{
+			Error: "Upload cannot be empty",
+		})
+		return
+	}
 	defer file.Close()
 
 	if err != nil {
-		//ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
 		ctx.JSON(&routing.UploadResult{
 			Error: err.Error(),
 		})

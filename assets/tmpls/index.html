@@ -2,10 +2,11 @@
   <div class="container">
     <div class="row">
       <h2>>> glitch_your_image</h2>
-      <form enctype="multipart/form-data" action="upload" method="post">
+      <form id="uploadForm" enctype="multipart/form-data" action="upload" method="post">
         {{ if .Home.Error }}
           <p class="error">error: {{.Home.Error}}</p>
         {{ end }}
+        <script type="text/javascript" src="./static/js/formSubmitHandler.js"></script>
         <div class="fileUpload">
           <div class="chooseFile">>> choose_file.(</div>
           <div class="fileName">...</div> )

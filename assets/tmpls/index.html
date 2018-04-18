@@ -6,16 +6,16 @@
         {{ if .Home.Error }}
           <p class="error">error: {{.Home.Error}}</p>
         {{ end }}
-        <script type="text/javascript" src="/static/js/jquery.form.js"></script>
-        <script type="text/javascript" src="/static/js/formSubmitHandler.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.form.js?v={{ _V "jquery.form.js"}}"></script>
+        <script type="text/javascript" src="/static/js/formSubmitHandler.js?v={{ _V "formSubmitHandler.js"}}"></script>
         <div class="fileUpload">
           <div class="chooseFile">>> choose_file.(</div>
           <div class="fileName">...</div> )
           <input type="file" name="uploadfile" class="uploadFile" />
-          <script type="text/javascript" src="/static/js/fileUpload.js"></script>
+          <script type="text/javascript" src="/static/js/fileUpload.js?v={{ _V "fileUpload.js"}}"></script>
         </div>
         <div class="expressionList">
-          <script type="text/javascript" src="/static/js/addExpression.js"></script>
+          <script type="text/javascript" src="/static/js/addExpression.js?v={{ _V "addExpression.js"}}"></script>
           <div class="expressionForm">
             <label for="expression">
               <span>>> expression.( "</span>

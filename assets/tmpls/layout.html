@@ -19,8 +19,8 @@
     {{ end }}
     {{ end }}
 
-    <link rel="stylesheet" href="/static/css/base.css">
-    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="/static/css/base.css?v={{ _V "base.css" }}">
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js?v={{ _V "jquery-3.3.1.min.js" }}"></script>
   </head>
   <body class="{{ .BodyClass }}">
     <section class="header">

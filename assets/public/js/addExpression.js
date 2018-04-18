@@ -7,14 +7,14 @@ $(document).ready(function() {
     }
     else {
       counter++;
-      $('.expressionList').append( '<div class="expressionForm" id=exp-' + (counter + 1) + '><label for="expression"><span>>> expression.( " </span></label><input type="text" name="expression" value="" class="expression" /><span> " )</span></div>' );
+      $('.expressionList').append( '<div class="expressionForm" id="' + (counter + 1) + '"><label for="expression"><span>>> expression.( " </span></label><input type="text" name="expression" value="" class="expression" /><span> " )</span></div>' );
       if (counter > 1) {
         $('.removeExpr').addClass('unhide');
       }
     }
   })
   $('.removeExpr').click(function() {
-    $('.expressionForm#exp-'+counter).remove();
+    $('.expressionForm#'+counter).remove();
     counter--;
     if (counter == 1) {
       $('.removeExpr').removeClass('unhide');

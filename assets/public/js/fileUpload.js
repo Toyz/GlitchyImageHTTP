@@ -1,7 +1,6 @@
-$('#uploadFile').click(function() {
-  $('#uploadFile').bind('change', function () {
-    var file = $("#uploadFile")[0].files[0];
-    console.log(file.name);
+$('.uploadFile').click(function() {
+  $('.uploadFile').bind('change', function () {
+    var file = $(".uploadFile")[0].files[0];
     if (/^\s*$/.test(file.name)) {
       $(".fileName").text("...");
     }

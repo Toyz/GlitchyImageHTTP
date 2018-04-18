@@ -23,10 +23,11 @@
             <input type="text" name="expression" value="{{ .Home.Expression }}" class="expression" />
             <span>" )</span>
           </div>
-          <div class="expressionButtons">
-            <input type="button" class="addExpr button" value=">> add.expr.optional(...)">
-            <input type="button" class="removeExpr button" value=">> rm.expr(...)">
-          </div>        </div>
+        </div>
+        <div class="expressionButtons">
+          <input type="button" class="addExpr button" value=">> add.expr.optional(...)">
+          <input type="button" class="removeExpr button" value=">> rm.expr(...)">
+        </div>       
         <input type="hidden" name="token" value="{{.Home.Token}}" />
         <input type="submit" value=">> upload.()" class="button submit" />
       </form>

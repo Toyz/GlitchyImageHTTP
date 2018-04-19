@@ -8,10 +8,10 @@
   version = "v0.3.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/Joker/jade"
   packages = ["."]
-  revision = "b6dd4ee919ca1c60a97e27b16868a5223f32033b"
+  revision = "b62ceaaacd5208e130ed3b43872750533febfc7a"
+  version = "v1.0-pre"
 
 [[projects]]
   name = "github.com/aws/aws-sdk-go"
@@ -124,7 +124,7 @@
   branch = "master"
   name = "github.com/json-iterator/go"
   packages = ["."]
-  revision = "f89479f5c0d83b365504d632ab57390447bb406a"
+  revision = "f88871b601a2c5579f7311d7903e0934375284dc"
 
 [[projects]]
   branch = "master"
@@ -278,7 +278,7 @@
   branch = "master"
   name = "github.com/sugoiuguu/go-glitch"
   packages = ["."]
-  revision = "30c90144b53c6506c49678e4fdeb9e12fd27958a"
+  revision = "92324ce49bcba61af3c1240340db9cf440646b9d"
 
 [[projects]]
   name = "github.com/tdewolff/minify"
@@ -336,13 +336,13 @@
     "html",
     "html/atom"
   ]
-  revision = "61147c48b25b599e5b561d2e9c4f3e1ef489ca41"
+  revision = "d41e8174641f662c5a2d1c7a5f9e828788eb8706"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "2281fa97ef7b0c26324634d5a22f04babdac8713"
+  revision = "3ccc7e5779793fd54564baf60c51bf017955e0ba"
 
 [[projects]]
   name = "gopkg.in/AlecAivazis/survey.v1"

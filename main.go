@@ -123,9 +123,6 @@ func Upload(ctx iris.Context) {
 	for _, expression := range expressions {
 		expr, err := glitch.CompileExpression(expression)
 		if err != nil {
-			// TODO: make this actually show on the home screen
-			// THIS REDIRECT IS ONLY HERE TEMP UNTIL WE WRITE A BETTER ERROR HANDLER... MAYBE USING A "HTTPERROR" STRUCT THAT IS JSON
-			//ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
 			ctx.JSON(&routing.UploadResult{
 				Error: err.Error(),
 			})

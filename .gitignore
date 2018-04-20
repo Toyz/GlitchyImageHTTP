@@ -29,3 +29,6 @@ bindata.go
 assets/version.txt
 uploads/*.png
 assets/uploads/*.png
+
+# redundant sh*t
+chat.txt

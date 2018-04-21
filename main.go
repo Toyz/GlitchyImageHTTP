@@ -263,20 +263,6 @@ func main() {
 	app.Get("/", Index)
 	app.Post("/upload", Upload)
 	app.Get("/{image:string}", ViewImage)
-	/*
-		switch core.GetSaveMode() {
-		case "aws":
-			app.Get("/img/{file:string}", func(ctx iris.Context) {
-				data := saveMode.Read(ctx.Params().Get("file"))
-
-				ctx.Header("content-type", "image/png")
-				ctx.Write(data)
-			})
-			break
-		case "fs":
-			app.StaticWeb("/img", "./assets/uploads")
-		}
-	*/
 	app.StaticWeb("/static", "./assets/public")
 
 	app.Build()

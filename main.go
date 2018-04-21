@@ -37,7 +37,7 @@ import (
 	"github.com/valyala/fasthttp/fasthttpadaptor"
 )
 
-var allowedFileTypes = []string{"image/jpeg", "image/png"}
+var allowedFileTypes = []string{"image/jpeg", "image/png", "image/jpg"}
 var saveMode filemodes.SaveMode
 var defaultExpressions []string
 
@@ -133,7 +133,9 @@ func Upload(ctx iris.Context) {
 		out = newImage
 		newImage = nil
 	}
+
 	png.Encode(buff, out)
+
 	bounds := out.Bounds()
 	out = nil
 	img = nil

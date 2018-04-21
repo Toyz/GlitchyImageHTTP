@@ -44,8 +44,8 @@
     "service/s3",
     "service/sts"
   ]
-  revision = "9b0098a71f6d4d473a26ec8ad3c2feaac6eb1da6"
-  version = "v1.13.32"
+  revision = "3e7014382cdc91695381614d0110a3cff997ba72"
+  version = "v1.13.34"
 
 [[projects]]
   branch = "master"
@@ -100,8 +100,8 @@
 [[projects]]
   name = "github.com/go-ini/ini"
   packages = ["."]
-  revision = "ace140f73450505f33e8b8418216792275ae82a7"
-  version = "v1.35.0"
+  revision = "6529cf7c58879c08d927016dde4477f18a0634cb"
+  version = "v1.36.0"
 
 [[projects]]
   branch = "master"
@@ -124,7 +124,7 @@
   branch = "master"
   name = "github.com/json-iterator/go"
   packages = ["."]
-  revision = "f88871b601a2c5579f7311d7903e0934375284dc"
+  revision = "6c702ce12a197b8382f7b5a1c43e88ac065e7a66"
 
 [[projects]]
   branch = "master"
@@ -278,7 +278,7 @@
   branch = "master"
   name = "github.com/sugoiuguu/go-glitch"
   packages = ["."]
-  revision = "92324ce49bcba61af3c1240340db9cf440646b9d"
+  revision = "7106aa6a3b5dbdf4a3412f9ba694b5e398ef772f"
 
 [[projects]]
   name = "github.com/tdewolff/minify"
@@ -327,7 +327,7 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "d6449816ce06963d9d136eee5a56fca5b0616e7e"
+  revision = "e73bf333ef8920dbb52ad18d4bd38ad9d9bc76d7"
 
 [[projects]]
   branch = "master"
@@ -336,13 +336,13 @@
     "html",
     "html/atom"
   ]
-  revision = "d41e8174641f662c5a2d1c7a5f9e828788eb8706"
+  revision = "5f9ae10d9af5b1c89ae6904293b14b064d4ada23"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "3ccc7e5779793fd54564baf60c51bf017955e0ba"
+  revision = "79b0c6888797020a994db17c8510466c72fe75d9"
 
 [[projects]]
   name = "gopkg.in/AlecAivazis/survey.v1"

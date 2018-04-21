@@ -67,19 +67,6 @@ func Upload(ctx iris.Context) {
 	defer file.Close()
 
 	exps := ctx.FormValues()
-	switch {
-	case exps == nil:
-		ctx.JSON(&routing.UploadResult{
-			Error: "Glitcher needs one or more expressions",
-		})
-		return
-	case len(exps) > 5:
-		ctx.JSON(&routing.UploadResult{
-			Error: "Only 5 expressions are allowed",
-		})
-		return
-	}
-
 	expressions := make([]string, 0, len(exps))
 	for k, v := range exps {
 		if strings.EqualFold(k, "expression") {
@@ -89,6 +76,13 @@ func Upload(ctx iris.Context) {
 				}
 			}
 		}
+	}
+
+	if len(expressions) > 5 {
+		ctx.JSON(&routing.UploadResult{
+			Error: "Only 5 expressions are allowed",
+		})
+		return
 	}
 
 	// Hack: This is hacky as all hell just to get the damn fileHeader form the bytes

@@ -56,7 +56,7 @@ func Index(ctx iris.Context) {
 }
 
 func Upload(ctx iris.Context) {
-	ctx.SetMaxRequestBodySize(5 << 20) // 5mb
+	ctx.SetMaxRequestBodySize(5 << 20) // 5mb because we can
 	file, _, err := ctx.FormFile("uploadfile")
 	if err != nil {
 		ctx.JSON(&routing.UploadResult{

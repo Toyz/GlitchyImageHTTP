@@ -2,12 +2,13 @@ package core
 
 import (
 	"html/template"
+	"log"
 	"path"
 	"reflect"
 	"strings"
 	"time"
 
-	"github.com/c2h5oh/datasize"
+	humanize "github.com/dustin/go-humanize"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/view"
 	"github.com/tdewolff/minify"
@@ -68,6 +69,7 @@ func (render *render) Defaults() *render {
 			newKeys[i] = v
 		}
 
+		log.Println(newKeys...)
 		return ""
 	})
 
@@ -158,7 +160,11 @@ func (render *render) Defaults() *render {
 	})
 
 	render.AddFunc("formatFS", func(size int) string {
-		return datasize.ByteSize(size).HR()
+		return humanize.Bytes(uint64(size))
+	})
+
+	render.AddFunc("formatTime", func(stamp time.Time) string {
+		return humanize.Time(stamp)
 	})
 
 	return render

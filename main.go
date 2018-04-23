@@ -57,7 +57,7 @@ func Index(ctx iris.Context) {
 
 func Upload(ctx iris.Context) {
 	ctx.SetMaxRequestBodySize(5 << 20) // 5mb because we can
-	file, _, err := ctx.FormFile("uploadfile")
+	file, fHeader, err := ctx.FormFile("uploadfile")
 	if err != nil {
 		ctx.JSON(&routing.UploadResult{
 			Error: "Upload cannot be empty",
@@ -173,6 +173,7 @@ func Upload(ctx iris.Context) {
 	err = c.Insert(&database.ArtItem{
 		ID:          idx,
 		FileName:    fileName,
+		OrgFileName: fHeader.Filename,
 		Folder:      folder,
 		FullPath:    actualFileName,
 		Expression:  expression,

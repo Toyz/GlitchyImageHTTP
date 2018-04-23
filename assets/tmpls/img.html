@@ -17,6 +17,7 @@
       {{ end }}     
       <h4>>> total_views = {{.Data.Views}}</h4>
       <h4>>> uploaded_on = " {{.Data.Uploaded}} "</h4>
+      <h4>>> uploaded_on_from = " {{ formatTime .Data.Uploaded}} "</h4>
       <div class="display">
         <img src="{{.Data.FullPath}}" />
       </div>

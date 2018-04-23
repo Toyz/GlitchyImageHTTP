@@ -8,10 +8,10 @@
   version = "v0.3.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/Joker/jade"
   packages = ["."]
-  revision = "b62ceaaacd5208e130ed3b43872750533febfc7a"
-  version = "v1.0-pre"
+  revision = "8828253bfc54f2f91aaef5f32b44a244b0a98e4f"
 
 [[projects]]
   name = "github.com/aws/aws-sdk-go"
@@ -60,9 +60,9 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/c2h5oh/datasize"
+  name = "github.com/dustin/go-humanize"
   packages = ["."]
-  revision = "4eba002a5eaea69cf8d235a388fc6b65ae68d2dd"
+  revision = "02af3965c54e8cacf948b97fef38925c4120652c"
 
 [[projects]]
   branch = "master"
@@ -168,8 +168,8 @@
     "middleware/recover",
     "view"
   ]
-  revision = "41b17aca9ec493f6eedf17c0e5545cf134f2d445"
-  version = "v10.5.0"
+  revision = "f85b10ec72337c117d2844e441795b0f070b45ca"
+  version = "v10.6.0"
 
 [[projects]]
   branch = "master"
@@ -257,10 +257,10 @@
   revision = "abc90934186a77966e2beeac62ed966aac0561d5"
 
 [[projects]]
+  branch = "master"
   name = "github.com/satori/go.uuid"
   packages = ["."]
-  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
-  version = "v1.2.0"
+  revision = "36e9d2ebbde5e3f13ab2e25625fd453271d6522e"
 
 [[projects]]
   branch = "master"
@@ -327,7 +327,7 @@
     "acme",
     "acme/autocert"
   ]
-  revision = "e73bf333ef8920dbb52ad18d4bd38ad9d9bc76d7"
+  revision = "2b6c08872f4b66da917bb4ce98df4f0307330f78"
 
 [[projects]]
   branch = "master"
@@ -368,6 +368,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3430ee0be546f83020c559fc6d7f1d17c98e8ee69c0ed6cf6cc4224ef9014614"
+  inputs-digest = "30df6652c987a27859a84f9be7e0eaa88edbbaad7a057049a6e5e9d01a5cce6a"
   solver-name = "gps-cdcl"
   solver-version = 1

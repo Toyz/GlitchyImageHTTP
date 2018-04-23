@@ -2,6 +2,7 @@ package database
 
 import (
 	"log"
+	"os"
 
 	"github.com/Toyz/GlitchyImageHTTP/core"
 	"github.com/globalsign/mgo"
@@ -18,7 +19,9 @@ var MongoInstance *mongo
 func NewMongo() {
 	session, err := mgo.Dial(core.GetEnv("MONGO_HOST", "localhost"))
 	if err != nil {
-		log.Println(err)
+		// This should never happen but if it does we need to panic... this can cause some wonky effects if we don't...
+		log.Panicln(err)
+		os.Exit(9)
 	}
 	session.SetMode(mgo.Monotonic, true)
 

@@ -17,7 +17,7 @@
       {{ end }}     
       <h4>>> total_views = {{.Data.Views}}</h4>
       <h4>>> uploaded_on = " {{.Data.Uploaded}} "</h4>
-      <h4>>> upload_delta_t = " {{ formatTime .Data.Uploaded}} "</h4>
+      <h4>>> upload_t_minus = " {{ replace "ago" "" (formatTime .Data.Uploaded) 1 }} "</h4>
       <div class="display">
         <img src="{{.Data.FullPath}}" />
       </div>

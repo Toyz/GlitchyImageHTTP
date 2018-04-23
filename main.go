@@ -235,7 +235,7 @@ func ViewImage(ctx iris.Context) {
 	ctx.ViewData("Data", image)
 	ctx.ViewData("BodyClass", "image")
 
-	ctx.View("img.html")
+	ctx.View("viewing.html")
 }
 
 func main() {

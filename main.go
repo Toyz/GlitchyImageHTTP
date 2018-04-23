@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"image"
+	"image/jpeg"
 	_ "image/jpeg"
 	"image/png"
 	"io"
@@ -134,7 +135,14 @@ func Upload(ctx iris.Context) {
 		newImage = nil
 	}
 
-	png.Encode(buff, out)
+	switch strings.ToLower(cntType) {
+	case "image/png":
+		png.Encode(buff, out)
+		break
+	case "image/jpg", "image/jpeg":
+		jpeg.Encode(buff, out, nil)
+		break
+	}
 
 	bounds := out.Bounds()
 	out = nil
@@ -142,7 +150,7 @@ func Upload(ctx iris.Context) {
 
 	md5Sum := core.GetMD5(buff.Bytes())
 	idx := filemodes.GetID(md5Sum)
-	fileName := fmt.Sprintf("%s.png", md5Sum)
+	fileName := fmt.Sprintf("%s.%s", md5Sum, core.MimeToExtension(cntType))
 
 	actualFileName, folder := saveMode.Write(buff.Bytes(), fileName)
 

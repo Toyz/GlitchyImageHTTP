@@ -72,3 +72,14 @@ func GetMimeType(file multipart.File) string {
 func GetMimeTypeFromBytes(fileHeader []byte) string {
 	return http.DetectContentType(fileHeader)
 }
+
+func MimeToExtension(mime string) string {
+	switch strings.ToLower(mime) {
+	case "image/png":
+		return "png"
+	case "image/jpg", "image/jpeg":
+		return "jpg"
+	default:
+		return ""
+	}
+}

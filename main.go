@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"image"
 	"image/jpeg"
-	_ "image/jpeg"
 	"image/png"
 	"io"
 	"log"

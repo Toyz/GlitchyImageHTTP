@@ -25,6 +25,22 @@ func NewMongo() {
 	}
 	session.SetMode(mgo.Monotonic, true)
 
+	userName := core.GetEnv("MONGO_USER", "")
+	password := core.GetEnv("MONGO_PASS", "")
+	if len(userName) > 0 && len(password) > 0 {
+		err := session.Login(&mgo.Credential{
+			Username: userName,
+			Password: password,
+		})
+
+		if err != nil {
+			// Panic when we failed to login because well... go build in logger has no warning...
+			// Maybe i should replace the build in logger later... Iris has one built in that we could make public
+			log.Panicln(err)
+			os.Exit(9)
+		}
+	}
+
 	MongoInstance = &mongo{
 		mgoSession: session,
 		database:   core.GetEnv("MONGO_DB", "glitch"),

@@ -7,6 +7,9 @@ type HomePage struct {
 }
 
 type UploadResult struct {
-	ID    string `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
+}
+
+type JsonError struct {
 	Error string `json:"error,omitempty"`
 }

@@ -79,6 +79,8 @@ func MimeToExtension(mime string) string {
 		return "png"
 	case "image/jpg", "image/jpeg":
 		return "jpg"
+	case "image/gif":
+		return "gif"
 	default:
 		return ""
 	}

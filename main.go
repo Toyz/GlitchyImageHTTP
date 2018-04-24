@@ -1,19 +1,13 @@
 package main
 
 import (
-	"bytes"
 	"crypto/md5"
-	"encoding/binary"
 	"fmt"
-	"image"
-	"image/jpeg"
-	"image/png"
 	"io"
 	"log"
 	"math/rand"
 	"regexp"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/Toyz/GlitchyImageHTTP/core"
@@ -25,7 +19,6 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
-	glitch "github.com/sugoiuguu/go-glitch"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/css"
 	"github.com/tdewolff/minify/html"
@@ -37,7 +30,7 @@ import (
 	"github.com/valyala/fasthttp/fasthttpadaptor"
 )
 
-var allowedFileTypes = []string{"image/jpeg", "image/png", "image/jpg"}
+var allowedFileTypes = []string{"image/jpeg", "image/png", "image/jpg", "image/gif"}
 var saveMode filemodes.SaveMode
 var defaultExpressions []string
 
@@ -53,152 +46,6 @@ func Index(ctx iris.Context) {
 		Expression: defaultExpressions[rand.Intn(len(defaultExpressions))],
 	})
 	ctx.View("index.html")
-}
-
-func Upload(ctx iris.Context) {
-	ctx.SetMaxRequestBodySize(5 << 20) // 5mb because we can
-	file, fHeader, err := ctx.FormFile("uploadfile")
-	if err != nil {
-		ctx.JSON(&routing.UploadResult{
-			Error: "Upload cannot be empty",
-		})
-		return
-	}
-	defer file.Close()
-
-	exps := ctx.FormValues()
-	expressions := make([]string, 0, len(exps))
-	for k, v := range exps {
-		if strings.EqualFold(k, "expression") {
-			for _, item := range v {
-				if len(strings.TrimSpace(item)) > 0 {
-					expressions = append(expressions, item)
-				}
-			}
-		}
-	}
-
-	if len(expressions) > 5 {
-		ctx.JSON(&routing.UploadResult{
-			Error: "Only 5 expressions are allowed",
-		})
-		return
-	}
-
-	// Hack: This is hacky as all hell just to get the damn fileHeader form the bytes
-	cntType := core.GetMimeType(file)
-	if ok, _ := core.InArray(cntType, allowedFileTypes); !ok {
-		ctx.JSON(&routing.UploadResult{
-			Error: "File type is not allowed only PNG and JPEG allowed",
-		})
-		return
-	}
-
-	img, _, err := image.Decode(file)
-	if err != nil {
-		ctx.JSON(&routing.UploadResult{
-			Error: err.Error(),
-		})
-		return
-	}
-
-	if (img.Bounds().Max.X * img.Bounds().Max.Y) > (1920 * 1080) {
-		img = nil
-		ctx.JSON(&routing.UploadResult{
-			Error: "Max image size is 1920x1080 (1080p)",
-		})
-		return
-	}
-
-	buff := new(bytes.Buffer)
-	out := img
-
-	for _, expression := range expressions {
-		expr, err := glitch.CompileExpression(expression)
-		if err != nil {
-			ctx.JSON(&routing.UploadResult{
-				Error: err.Error(),
-			})
-			return
-		}
-
-		newImage, err := expr.JumblePixels(out)
-		if err != nil {
-			out = nil
-			ctx.JSON(&routing.UploadResult{
-				Error: err.Error(),
-			})
-			return
-		}
-		out = newImage
-		newImage = nil
-	}
-
-	switch strings.ToLower(cntType) {
-	case "image/png":
-		png.Encode(buff, out)
-		break
-	case "image/jpg", "image/jpeg":
-		jpeg.Encode(buff, out, nil)
-		break
-	}
-
-	bounds := out.Bounds()
-	out = nil
-	img = nil
-
-	md5Sum := core.GetMD5(buff.Bytes())
-	idx := filemodes.GetID(md5Sum)
-	fileName := fmt.Sprintf("%s.%s", md5Sum, core.MimeToExtension(cntType))
-
-	actualFileName, folder := saveMode.Write(buff.Bytes(), fileName)
-
-	session, c := database.MongoInstance.GetCollection()
-	defer session.Close()
-
-	index := mgo.Index{
-		Key:        []string{"id", "filename"},
-		Unique:     true,
-		DropDups:   true,
-		Background: true,
-		Sparse:     true,
-	}
-	c.EnsureIndex(index)
-
-	expression := ""
-	if len(expressions) == 1 {
-		expression = expressions[0]
-	}
-
-	err = c.Insert(&database.ArtItem{
-		ID:          idx,
-		FileName:    fileName,
-		OrgFileName: fHeader.Filename,
-		Folder:      folder,
-		FullPath:    actualFileName,
-		Expression:  expression,
-		Expressions: expressions,
-		Views:       0,
-		Uploaded:    time.Now(),
-		FileSize:    binary.Size(buff.Bytes()),
-		Width:       bounds.Max.X,
-		Height:      bounds.Max.Y,
-	})
-
-	if err != nil {
-		buff = nil
-		//ctx.Redirect(fmt.Sprintf("/?error=%s", url.QueryEscape(err.Error())))
-		ctx.JSON(&routing.UploadResult{
-			Error: err.Error(),
-		})
-		return
-	}
-
-	buff = nil
-	ctx.JSON(&routing.UploadResult{
-		ID: idx,
-	})
-	//ctx.Redirect(fmt.Sprintf("/%s", idx))
 }
 
 func ViewImage(ctx iris.Context) {
@@ -271,7 +118,7 @@ func main() {
 	app.RegisterView(tmpEngine.ViewEngine)
 
 	app.Get("/", Index)
-	app.Post("/upload", Upload)
+	app.Post("/upload", routing.Upload)
 	app.Get("/{image:string}", ViewImage)
 	app.StaticWeb("/static", "./assets/public")
 

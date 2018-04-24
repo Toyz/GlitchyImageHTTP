@@ -44,8 +44,8 @@
     "service/s3",
     "service/sts"
   ]
-  revision = "3e7014382cdc91695381614d0110a3cff997ba72"
-  version = "v1.13.34"
+  revision = "bd40d9f476190b2bd95120911312160641dba41e"
+  version = "v1.13.35"
 
 [[projects]]
   branch = "master"
@@ -278,7 +278,7 @@
   branch = "master"
   name = "github.com/sugoiuguu/go-glitch"
   packages = ["."]
-  revision = "7106aa6a3b5dbdf4a3412f9ba694b5e398ef772f"
+  revision = "1636114e6fc328318f66359b3873b8b102583898"
 
 [[projects]]
   name = "github.com/tdewolff/minify"

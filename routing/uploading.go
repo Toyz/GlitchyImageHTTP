@@ -60,7 +60,10 @@ func validateFileUpload(ctx iris.Context) (error, multipart.File, *multipart.Fil
 	return nil, file, fHeader, cntType
 }
 
-func SaveImage(buff []byte, cntType string, OrgFileName string, bounds image.Rectangle, expressions []string) (error, string) {
+func SaveImage(dataBuff *bytes.Buffer, cntType string, OrgFileName string, bounds image.Rectangle, expressions []string) (error, string) {
+	buff := dataBuff.Bytes()
+	defer dataBuff.Reset()
+
 	md5Sum := core.GetMD5(buff)
 	idx := filemodes.GetID(md5Sum)
 	fileName := fmt.Sprintf("%s.%s", md5Sum, core.MimeToExtension(cntType))
@@ -107,7 +110,7 @@ func SaveImage(buff []byte, cntType string, OrgFileName string, bounds image.Rec
 	return nil, idx
 }
 
-func processImage(file multipart.File, mime string, expressions []string) (error, []byte, image.Rectangle) {
+func processImage(file multipart.File, mime string, expressions []string) (error, *bytes.Buffer, image.Rectangle) {
 	buff := new(bytes.Buffer)
 	var bounds image.Rectangle
 	switch strings.ToLower(mime) {
@@ -158,7 +161,7 @@ func processImage(file multipart.File, mime string, expressions []string) (error
 		}
 	}
 
-	return nil, buff.Bytes(), bounds
+	return nil, buff, bounds
 }
 
 func gifImage(file multipart.File, expressions []string) (error, *bytes.Buffer, image.Rectangle) {
@@ -168,8 +171,8 @@ func gifImage(file multipart.File, expressions []string) (error, *bytes.Buffer, 
 
 	bounds = lGif.Image[0].Bounds()
 
-	if (bounds.Max.X * bounds.Max.Y) > (1024 * 768) {
-		return errors.New("Max image size is 1024x768 for GIFs"), nil, bounds
+	if (bounds.Max.X * bounds.Max.Y) > (500 * 500) {
+		return errors.New("Max image size is 500x500 for GIFs"), nil, bounds
 	}
 
 	if err != nil {
@@ -203,7 +206,7 @@ func gifImage(file multipart.File, expressions []string) (error, *bytes.Buffer, 
 func Upload(ctx iris.Context) {
 	saveMode = filemodes.GetFileMode()
 
-	ctx.SetMaxRequestBodySize(5 << 20) // 5mb because we can
+	ctx.SetMaxRequestBodySize(2 << 20) // 5mb because we can
 
 	err, expressions := validateFormFeilds(ctx)
 	if err != nil {

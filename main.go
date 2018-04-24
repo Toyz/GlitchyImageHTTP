@@ -45,6 +45,7 @@ func Index(ctx iris.Context) {
 		Token:      token,
 		Expression: defaultExpressions[rand.Intn(len(defaultExpressions))],
 	})
+
 	ctx.View("index.html")
 }
 

@@ -124,7 +124,7 @@
   branch = "master"
   name = "github.com/json-iterator/go"
   packages = ["."]
-  revision = "6c702ce12a197b8382f7b5a1c43e88ac065e7a66"
+  revision = "2ddf6d758266fcb080a4f9e054b9f292c85e6798"
 
 [[projects]]
   branch = "master"

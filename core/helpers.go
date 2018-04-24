@@ -32,6 +32,10 @@ func GetSaveMode() string {
 	return strings.ToLower(GetEnv("SAVE_MODE", "fs"))
 }
 
+func RunningMode() string {
+	return strings.ToLower(GetEnv("MODE", "debug"))
+}
+
 // TODO: add things we actually need helpers for here
 func InArray(val string, array []string) (exists bool, index int) {
 	exists = false

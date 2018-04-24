@@ -54,7 +54,7 @@ func validateFileUpload(ctx iris.Context) (error, multipart.File, *multipart.Fil
 
 	cntType := core.GetMimeType(file)
 	if ok, _ := core.InArray(cntType, allowedFileTypes); !ok {
-		return errors.New("File type is not allowed only PNG and JPEG allowed"), nil, nil, ""
+		return errors.New("File type is not allowed only PNG, JPEG, GIF allowed"), nil, nil, ""
 	}
 
 	return nil, file, fHeader, cntType
@@ -166,6 +166,12 @@ func gifImage(file multipart.File, expressions []string) (error, *bytes.Buffer, 
 	buff := new(bytes.Buffer)
 	lGif, err := gif.DecodeAll(file)
 
+	bounds = lGif.Image[0].Bounds()
+
+	if (bounds.Max.X * bounds.Max.Y) > (1024 * 768) {
+		return errors.New("Max image size is 1024x768 for GIFs"), nil, bounds
+	}
+
 	if err != nil {
 		return err, nil, image.Rectangle{}
 	}
@@ -191,7 +197,6 @@ func gifImage(file multipart.File, expressions []string) (error, *bytes.Buffer, 
 		return err, nil, bounds
 	}
 
-	bounds = out.Image[0].Bounds()
 	return nil, buff, bounds
 }
 

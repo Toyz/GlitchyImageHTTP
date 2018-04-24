@@ -23,9 +23,10 @@ import (
 
 var allowedFileTypes = []string{"image/jpeg", "image/png", "image/jpg", "image/gif"}
 var saveMode filemodes.SaveMode
-var expressions []string
 
-func validateFormFeilds(ctx iris.Context) error {
+func validateFormFeilds(ctx iris.Context) (error, []string) {
+	var expressions []string
+
 	exps := ctx.FormValues()
 	for k, v := range exps {
 		if strings.EqualFold(k, "expression") {
@@ -38,10 +39,10 @@ func validateFormFeilds(ctx iris.Context) error {
 	}
 
 	if len(expressions) > 5 {
-		return errors.New("Only 5 expressions are allowed")
+		return errors.New("Only 5 expressions are allowed"), nil
 	}
 
-	return nil
+	return nil, expressions
 }
 
 func validateFileUpload(ctx iris.Context) (error, multipart.File, *multipart.FileHeader, string) {
@@ -59,7 +60,7 @@ func validateFileUpload(ctx iris.Context) (error, multipart.File, *multipart.Fil
 	return nil, file, fHeader, cntType
 }
 
-func SaveImage(buff []byte, cntType string, OrgFileName string, bounds image.Rectangle) (error, string) {
+func SaveImage(buff []byte, cntType string, OrgFileName string, bounds image.Rectangle, expressions []string) (error, string) {
 	md5Sum := core.GetMD5(buff)
 	idx := filemodes.GetID(md5Sum)
 	fileName := fmt.Sprintf("%s.%s", md5Sum, core.MimeToExtension(cntType))
@@ -106,12 +107,12 @@ func SaveImage(buff []byte, cntType string, OrgFileName string, bounds image.Rec
 	return nil, idx
 }
 
-func processImage(file multipart.File, mime string) (error, []byte, image.Rectangle) {
+func processImage(file multipart.File, mime string, expressions []string) (error, []byte, image.Rectangle) {
 	buff := new(bytes.Buffer)
 	var bounds image.Rectangle
 	switch strings.ToLower(mime) {
 	case "image/gif":
-		err, by, rect := gifImage(file)
+		err, by, rect := gifImage(file, expressions)
 		bounds = rect
 
 		if err != nil {
@@ -160,7 +161,7 @@ func processImage(file multipart.File, mime string) (error, []byte, image.Rectan
 	return nil, buff.Bytes(), bounds
 }
 
-func gifImage(file multipart.File) (error, *bytes.Buffer, image.Rectangle) {
+func gifImage(file multipart.File, expressions []string) (error, *bytes.Buffer, image.Rectangle) {
 	var bounds image.Rectangle
 	buff := new(bytes.Buffer)
 	lGif, err := gif.DecodeAll(file)
@@ -199,7 +200,7 @@ func Upload(ctx iris.Context) {
 
 	ctx.SetMaxRequestBodySize(5 << 20) // 5mb because we can
 
-	err := validateFormFeilds(ctx)
+	err, expressions := validateFormFeilds(ctx)
 	if err != nil {
 		ctx.JSON(JsonError{
 			Error: err.Error(),
@@ -215,7 +216,7 @@ func Upload(ctx iris.Context) {
 		return
 	}
 
-	err, data, bounds := processImage(file, mime)
+	err, data, bounds := processImage(file, mime, expressions)
 	if err != nil {
 		ctx.JSON(JsonError{
 			Error: err.Error(),
@@ -223,7 +224,7 @@ func Upload(ctx iris.Context) {
 		return
 	}
 
-	err, id := SaveImage(data, mime, header.Filename, bounds)
+	err, id := SaveImage(data, mime, header.Filename, bounds, expressions)
 	if err != nil {
 		ctx.JSON(JsonError{
 			Error: err.Error(),

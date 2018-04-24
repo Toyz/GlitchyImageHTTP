@@ -44,8 +44,8 @@
     "service/s3",
     "service/sts"
   ]
-  revision = "bd40d9f476190b2bd95120911312160641dba41e"
-  version = "v1.13.35"
+  revision = "6454c9c7415974700e9d0d7f480edbe669f7b2f8"
+  version = "v1.13.36"
 
 [[projects]]
   branch = "master"
@@ -95,7 +95,7 @@
     "internal/sasl",
     "internal/scram"
   ]
-  revision = "f76e4f9da92ecd56e3be26f5ba92580af1ef97b4"
+  revision = "efe0945164a7e582241f37ae8983c075f8f2e870"
 
 [[projects]]
   name = "github.com/go-ini/ini"

@@ -78,6 +78,7 @@ func ViewImage(ctx iris.Context) {
 			log.Println(err)
 		}
 
+		image.Views = image.Views + 1 // hack... Gets around the offset not being defined...
 		sess.Set("LastViewed", id)
 	}
 

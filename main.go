@@ -50,6 +50,8 @@ func Index(ctx iris.Context) {
 }
 
 func ViewImage(ctx iris.Context) {
+	sess := core.SessionManager.Session.Start(ctx)
+
 	id := ctx.Params().Get("image")
 
 	session, c := database.MongoInstance.GetCollection()
@@ -63,13 +65,19 @@ func ViewImage(ctx iris.Context) {
 		return
 	}
 
-	change := mgo.Change{
-		Update:    bson.M{"$inc": bson.M{"views": 1}},
-		ReturnNew: false,
-	}
-	_, err := c.Find(bson.M{"id": id}).Apply(change, &image)
-	if err != nil {
-		log.Println(err)
+	lastViewed := sess.GetStringDefault("LastViewed", "")
+
+	if len(lastViewed) <= 0 {
+		change := mgo.Change{
+			Update:    bson.M{"$inc": bson.M{"views": 1}},
+			ReturnNew: false,
+		}
+		_, err := c.Find(bson.M{"id": id}).Apply(change, &image)
+		if err != nil {
+			log.Println(err)
+		}
+
+		sess.Set("LastViewed", id)
 	}
 
 	//image.FullPath = fmt.Sprintf("%s://%s/%s/%s", "https", ctx.Host(), "img", image.FileName)
@@ -88,6 +96,8 @@ func ViewImage(ctx iris.Context) {
 
 func main() {
 	rand.Seed(time.Now().Unix())
+
+	core.NewSessions()
 
 	database.NewMongo()
 	core.Render.New()

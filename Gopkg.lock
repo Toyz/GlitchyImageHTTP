@@ -104,6 +104,30 @@
   version = "v1.36.0"
 
 [[projects]]
+  name = "github.com/go-redis/redis"
+  packages = [
+    ".",
+    "internal",
+    "internal/consistenthash",
+    "internal/hashtag",
+    "internal/pool",
+    "internal/proto",
+    "internal/singleflight",
+    "internal/util"
+  ]
+  revision = "877867d2845fbaf86798befe410b6ceb6f5c29a3"
+  version = "v6.10.2"
+
+[[projects]]
+  name = "github.com/gomodule/redigo"
+  packages = [
+    "internal",
+    "redis"
+  ]
+  revision = "9c11da706d9b7902c6da69c592f75637793fe121"
+  version = "v2.0.0"
+
+[[projects]]
   name = "github.com/gorilla/securecookie"
   packages = ["."]
   revision = "e59506cc896acb7f7bf732d4fdf5e25f7ccd8983"
@@ -173,6 +197,8 @@
     "middleware/logger",
     "middleware/recover",
     "sessions",
+    "sessions/sessiondb/redis",
+    "sessions/sessiondb/redis/service",
     "view"
   ]
   revision = "f85b10ec72337c117d2844e441795b0f070b45ca"
@@ -375,6 +401,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c35b454f40598eafd07ef766e4865301f1af1a7a647c4bdd773ad78a2e25d510"
+  inputs-digest = "4b18d43a1b3d4bcc1825a115e4b16c7814eac2cc5358103aa09c4dd8c1411a1d"
   solver-name = "gps-cdcl"
   solver-version = 1

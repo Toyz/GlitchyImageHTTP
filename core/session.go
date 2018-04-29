@@ -3,15 +3,29 @@ package core
 import (
 	"github.com/gorilla/securecookie"
 	sess "github.com/kataras/iris/sessions"
+	"github.com/kataras/iris/sessions/sessiondb/redis"
+	"github.com/kataras/iris/sessions/sessiondb/redis/service"
 )
 
 type Session struct {
-	Session *sess.Sessions
+	Session  *sess.Sessions
+	Database *redis.Database
 }
 
 var SessionManager *Session
 
 func NewSessions() {
+	db := redis.New(service.Config{
+		Network:     service.DefaultRedisNetwork,
+		Addr:        RedisManager.Addr,
+		Password:    RedisManager.Password,
+		Database:    "",
+		MaxIdle:     0,
+		MaxActive:   0,
+		IdleTimeout: service.DefaultRedisIdleTimeout,
+		Prefix:      GetEnv("REDIS_PREFIX", "gog_"),
+	}) // optionally configure the bridge between your redis server
+
 	// AES only supports key sizes of 16, 24 or 32 bytes.
 	// You either need to provide exactly that amount or you derive the key from what you type in.
 	hashKey := []byte(GetEnv("SESSION_HASH_KEY", "d2WEEsHDOZTy2qBOcwS8gPd0ZN7UEsxX"))
@@ -24,5 +38,6 @@ func NewSessions() {
 		Decode: secureCookie.Decode,
 	})
 
-	SessionManager = &Session{mySessions}
+	mySessions.UseDatabase(db)
+	SessionManager = &Session{mySessions, db}
 }

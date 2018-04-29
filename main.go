@@ -97,6 +97,7 @@ func ViewImage(ctx iris.Context) {
 func main() {
 	rand.Seed(time.Now().Unix())
 
+	core.NewRedis()
 	core.NewSessions()
 
 	database.NewMongo()

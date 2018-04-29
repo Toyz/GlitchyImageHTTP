@@ -16,3 +16,9 @@ type ArtItem struct {
 	Width       int       `json:"width"`
 	Height      int       `json:"height"`
 }
+
+type AlertItem struct {
+	Key   string  `json:"key"`
+	Value string  `json:"message"`
+	TTL   float64 `json:"ttl"` // Time To Live
+}

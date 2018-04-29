@@ -1,6 +1,8 @@
 package core
 
 import (
+	"strconv"
+
 	"github.com/gorilla/securecookie"
 	sess "github.com/kataras/iris/sessions"
 	"github.com/kataras/iris/sessions/sessiondb/redis"
@@ -19,9 +21,7 @@ func NewSessions() {
 		Network:     service.DefaultRedisNetwork,
 		Addr:        RedisManager.Addr,
 		Password:    RedisManager.Password,
-		Database:    "",
-		MaxIdle:     0,
-		MaxActive:   0,
+		Database:    strconv.Itoa(RedisManager.Database),
 		IdleTimeout: service.DefaultRedisIdleTimeout,
 		Prefix:      GetEnv("REDIS_PREFIX", "gog_"),
 	}) // optionally configure the bridge between your redis server

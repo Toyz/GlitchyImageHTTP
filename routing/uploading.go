@@ -9,6 +9,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"log"
 	"mime/multipart"
 	"strings"
 	"time"
@@ -24,7 +25,18 @@ import (
 var allowedFileTypes = []string{"image/jpeg", "image/png", "image/jpg", "image/gif"}
 var saveMode filemodes.SaveMode
 
-func validateFormFeilds(ctx iris.Context) (error, []string) {
+func validateFormFeilds(ctx iris.Context) (error, []string, string) {
+	token := ctx.FormValue("token")
+	key := fmt.Sprintf("Upload%s", token)
+	if len(token) <= 0 {
+		return errors.New("Invalid upload token"), nil, ""
+	}
+
+	exist := core.RedisManager.Exist(key)
+	if !exist {
+		return errors.New("Invalid upload token"), nil, ""
+	}
+
 	var expressions []string
 
 	exps := ctx.FormValues()
@@ -39,10 +51,10 @@ func validateFormFeilds(ctx iris.Context) (error, []string) {
 	}
 
 	if len(expressions) > 5 {
-		return errors.New("Only 5 expressions are allowed"), nil
+		return errors.New("Only 5 expressions are allowed"), nil, ""
 	}
 
-	return nil, expressions
+	return nil, expressions, token
 }
 
 func validateFileUpload(ctx iris.Context) (error, multipart.File, *multipart.FileHeader, string) {
@@ -208,7 +220,7 @@ func Upload(ctx iris.Context) {
 
 	ctx.SetMaxRequestBodySize(2 << 20) // 5mb because we can
 
-	err, expressions := validateFormFeilds(ctx)
+	err, expressions, token := validateFormFeilds(ctx)
 	if err != nil {
 		ctx.JSON(JsonError{
 			Error: err.Error(),
@@ -238,6 +250,11 @@ func Upload(ctx iris.Context) {
 			Error: err.Error(),
 		})
 		return
+	}
+
+	_, err = core.RedisManager.Delete(fmt.Sprintf("Upload%s", token))
+	if err != nil {
+		log.Println(err)
 	}
 
 	ctx.JSON(UploadResult{

@@ -41,6 +41,7 @@ func Index(ctx iris.Context) {
 	io.WriteString(h, strconv.FormatInt(crutime, 10))
 	token := fmt.Sprintf("%x", h.Sum(nil))
 
+	core.RedisManager.Set(fmt.Sprintf("Upload%s", token), token, 30*time.Minute)
 	ctx.ViewData("Home", routing.HomePage{
 		Error:      "", //ctx.URLParam("error"),
 		Token:      token,

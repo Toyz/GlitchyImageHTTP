@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Toyz/GlitchyImageHTTP/core"
@@ -67,7 +68,7 @@ func ViewImage(ctx iris.Context) {
 
 	lastViewed := sess.GetStringDefault("LastViewed", "")
 
-	if len(lastViewed) <= 0 {
+	if len(lastViewed) <= 0 || !strings.EqualFold(lastViewed, id) {
 		change := mgo.Change{
 			Update:    bson.M{"$inc": bson.M{"views": 1}},
 			ReturnNew: false,

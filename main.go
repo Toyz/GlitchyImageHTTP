@@ -15,8 +15,6 @@ import (
 	"github.com/Toyz/GlitchyImageHTTP/core/database"
 	"github.com/Toyz/GlitchyImageHTTP/core/filemodes"
 	"github.com/Toyz/GlitchyImageHTTP/routing"
-	"github.com/globalsign/mgo"
-	"github.com/globalsign/mgo/bson"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
@@ -56,13 +54,8 @@ func ViewImage(ctx iris.Context) {
 
 	id := ctx.Params().Get("image")
 
-	session, c := database.MongoInstance.GetCollection()
-	defer session.Close()
-
-	var image database.ArtItem
-	c.Find(bson.M{"id": id}).One(&image)
-
-	if len(image.FullPath) <= 0 {
+	err, image := database.MongoInstance.GetUploadInfo(id)
+	if err != nil {
 		ctx.Redirect("/")
 		return
 	}
@@ -70,11 +63,7 @@ func ViewImage(ctx iris.Context) {
 	lastViewed := sess.GetStringDefault("LastViewed", "")
 
 	if len(lastViewed) <= 0 || !strings.EqualFold(lastViewed, id) {
-		change := mgo.Change{
-			Update:    bson.M{"$inc": bson.M{"views": 1}},
-			ReturnNew: false,
-		}
-		_, err := c.Find(bson.M{"id": id}).Apply(change, &image)
+		err := database.MongoInstance.UploadInfoUpdateViews(image)
 		if err != nil {
 			log.Println(err)
 		}
@@ -82,8 +71,6 @@ func ViewImage(ctx iris.Context) {
 		image.Views = image.Views + 1 // hack... Gets around the offset not being defined...
 		sess.Set("LastViewed", id)
 	}
-
-	//image.FullPath = fmt.Sprintf("%s://%s/%s/%s", "https", ctx.Host(), "img", image.FileName)
 
 	data := ctx.GetViewData()["Header"].(core.HeaderMetaData)
 	header := core.Render.Header(fmt.Sprintf("%s - View Image %s", data.Title, image.ID), image.FullPath, data.Desc, image.ID)

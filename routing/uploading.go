@@ -17,7 +17,6 @@ import (
 	"github.com/Toyz/GlitchyImageHTTP/core"
 	"github.com/Toyz/GlitchyImageHTTP/core/database"
 	"github.com/Toyz/GlitchyImageHTTP/core/filemodes"
-	"github.com/globalsign/mgo"
 	"github.com/kataras/iris"
 	glitch "github.com/sugoiuguu/go-glitch"
 )
@@ -82,24 +81,12 @@ func SaveImage(dataBuff *bytes.Buffer, cntType string, OrgFileName string, bound
 
 	actualFileName, folder := saveMode.Write(buff, fileName)
 
-	session, c := database.MongoInstance.GetCollection()
-	defer session.Close()
-
-	index := mgo.Index{
-		Key:        []string{"id", "filename"},
-		Unique:     true,
-		DropDups:   true,
-		Background: true,
-		Sparse:     true,
-	}
-	c.EnsureIndex(index)
-
 	expression := ""
 	if len(expressions) == 1 {
 		expression = expressions[0]
 	}
 
-	err := c.Insert(&database.ArtItem{
+	item := &database.ArtItem{
 		ID:          idx,
 		FileName:    fileName,
 		OrgFileName: OrgFileName,
@@ -112,8 +99,9 @@ func SaveImage(dataBuff *bytes.Buffer, cntType string, OrgFileName string, bound
 		FileSize:    binary.Size(buff),
 		Width:       bounds.Max.X,
 		Height:      bounds.Max.Y,
-	})
+	}
 
+	err := database.MongoInstance.WriteUploadInfo(item)
 	if err != nil {
 		buff = nil
 		return err, ""

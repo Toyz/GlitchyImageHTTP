@@ -11,7 +11,6 @@ import (
 type mongo struct {
 	mgoSession *mgo.Session
 	database   string
-	collection string
 }
 
 var MongoInstance *mongo
@@ -35,7 +34,7 @@ func NewMongo() {
 
 		if err != nil {
 			// Panic when we failed to login because well... go build in logger has no warning...
-			// Maybe i should replace the build in logger later... Iris has one built in that we could make public
+			// Maybe i should replace the built in logger later... Iris has one built in that we could make public
 			log.Panicln(err)
 			os.Exit(9)
 		}
@@ -44,17 +43,16 @@ func NewMongo() {
 	MongoInstance = &mongo{
 		mgoSession: session,
 		database:   core.GetEnv("MONGO_DB", "glitch"),
-		collection: core.GetEnv("MONGO_COLLECTION", "artIds"),
 	}
 }
 
-func (mg *mongo) GetSession() *mgo.Session {
+func (mg *mongo) session() *mgo.Session {
 	return mg.mgoSession.Copy()
 }
 
-func (mg *mongo) GetCollection() (*mgo.Session, *mgo.Collection) {
-	session := mg.GetSession()
-	c := session.DB(mg.database).C(mg.collection)
+func (mg *mongo) collection(collection string) (*mgo.Session, *mgo.Collection) {
+	session := mg.session()
+	c := session.DB(mg.database).C(collection)
 
 	return session, c
 }

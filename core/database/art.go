@@ -7,10 +7,8 @@ import (
 	"github.com/globalsign/mgo/bson"
 )
 
-var artCollection string = "artIds"
-
 func (mg *mongo) WriteUploadInfo(upload *ArtItem) error {
-	session, c := mg.collection(artCollection)
+	session, c := mg.collection(ARTIDS_COL)
 	defer session.Close()
 
 	index := mgo.Index{
@@ -31,7 +29,7 @@ func (mg *mongo) WriteUploadInfo(upload *ArtItem) error {
 }
 
 func (mg *mongo) GetUploadInfo(id string) (error, ArtItem) {
-	session, c := mg.collection(artCollection)
+	session, c := mg.collection(ARTIDS_COL)
 	defer session.Close()
 
 	var image ArtItem
@@ -45,7 +43,7 @@ func (mg *mongo) GetUploadInfo(id string) (error, ArtItem) {
 }
 
 func (mg *mongo) UploadInfoUpdateViews(art ArtItem) error {
-	session, c := mg.collection(artCollection)
+	session, c := mg.collection(ARTIDS_COL)
 	defer session.Close()
 
 	change := mgo.Change{

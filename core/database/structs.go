@@ -2,6 +2,11 @@ package database
 
 import "time"
 
+const (
+	ARTIDS_COL = "artIds"
+	ALERTS_COL = "alerts" // unused... Will be used with @AlertItem
+)
+
 type ArtItem struct {
 	ID          string    `json:"id"`
 	Folder      string    `json:"folder"`

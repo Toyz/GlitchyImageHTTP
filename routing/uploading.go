@@ -130,13 +130,6 @@ func processImage(file multipart.File, mime string, expressions []string) (error
 		}
 		bounds = img.Bounds()
 
-		/*
-		if (bounds.Max.X * bounds.Max.Y) > (1920 * 1080) {
-			img = nil
-			return errors.New("Max image size is 1920x1080 (1080p)"), nil, bounds
-		}
-		*/
-
 		out := img
 		for _, expression := range expressions {
 			expr, err := glitch.CompileExpression(expression)
@@ -172,12 +165,6 @@ func gifImage(file multipart.File, expressions []string) (error, *bytes.Buffer, 
 	lGif, err := gif.DecodeAll(file)
 
 	bounds = lGif.Image[0].Bounds()
-
-	/*
-		if (bounds.Max.X * bounds.Max.Y) > (500 * 500) {
-			return errors.New("Max image size is 500x500 for GIFs"), nil, bounds
-		}
-	*/
 	if err != nil {
 		return err, nil, image.Rectangle{}
 	}
@@ -202,7 +189,6 @@ func gifImage(file multipart.File, expressions []string) (error, *bytes.Buffer, 
 	if err != nil {
 		return err, nil, bounds
 	}
-
 
 	return nil, buff, bounds
 }
@@ -242,7 +228,7 @@ func Upload(ctx iris.Context) {
 			Error: err.Error(),
 		})
 		return
-	
+	}
 
 	ctx.JSON(UploadResult{
 		ID: id,

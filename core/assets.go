@@ -20,8 +20,11 @@ type AssetTools struct {
 }
 
 var AssetManager *AssetTools
+var assetFolder string
 
 func (v *AssetTools) New() {
+	assetFolder = GetEnv("ASSET_FOLDER_PUBLIC", "./assets/public")
+
 	ResetVersions()
 	Render.AddFunc("_V", AssetManager.GetVersion)
 
@@ -75,7 +78,7 @@ func setUpMonitor() {
 		}
 	}()
 
-	if err := w.AddRecursive("./assets/public"); err != nil {
+	if err := w.AddRecursive(assetFolder); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -90,7 +93,7 @@ func ResetVersions() {
 	}
 
 	fileList := make([]string, 0)
-	e := filepath.Walk(GetEnv("ASSET_FOLDER_PUBLIC", "./assets/public"), func(path string, f os.FileInfo, err error) error {
+	e := filepath.Walk(assetFolder, func(path string, f os.FileInfo, err error) error {
 		if f.IsDir() {
 			return err
 		}

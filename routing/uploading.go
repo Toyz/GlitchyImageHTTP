@@ -9,7 +9,6 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-	"log"
 	"mime/multipart"
 	"strings"
 	"time"
@@ -54,7 +53,7 @@ func validateFormFeilds(ctx iris.Context) (error, []string, string) {
 		return errors.New("Only 5 expressions are allowed"), nil, ""
 	}
 
-	return nil, expressions, token
+	return nil, expressions, ""
 }
 
 func validateFileUpload(ctx iris.Context) (error, multipart.File, *multipart.FileHeader, string) {
@@ -201,6 +200,7 @@ func gifImage(file multipart.File, expressions []string) (error, *bytes.Buffer, 
 		return err, nil, bounds
 	}
 
+
 	return nil, buff, bounds
 }
 
@@ -209,7 +209,7 @@ func Upload(ctx iris.Context) {
 
 	ctx.SetMaxRequestBodySize(8 << 20) // 8mb because we can
 
-	err, expressions, token := validateFormFeilds(ctx)
+	err, expressions, _ := validateFormFeilds(ctx)
 	if err != nil {
 		ctx.JSON(JsonError{
 			Error: err.Error(),
@@ -239,12 +239,7 @@ func Upload(ctx iris.Context) {
 			Error: err.Error(),
 		})
 		return
-	}
-
-	_, err = core.RedisManager.Delete(fmt.Sprintf("Upload%s", token))
-	if err != nil {
-		log.Println(err)
-	}
+	
 
 	ctx.JSON(UploadResult{
 		ID: id,

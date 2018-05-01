@@ -25,16 +25,17 @@ var allowedFileTypes = []string{"image/jpeg", "image/png", "image/jpg", "image/g
 var saveMode filemodes.SaveMode
 
 func validateFormFeilds(ctx iris.Context) (error, []string, string) {
-	token := ctx.FormValue("token")
+	// token := ctx.FormValue("token")
 	//key := fmt.Sprintf("Upload%s", token)
-	if len(token) <= 0 {
-		return errors.New("Invalid upload token"), nil, ""
-	}
 	/*
-		exist := core.RedisManager.Exist(key)
-		if !exist {
+		if len(token) <= 0 {
 			return errors.New("Invalid upload token"), nil, ""
 		}
+
+			exist := core.RedisManager.Exist(key)
+			if !exist {
+				return errors.New("Invalid upload token"), nil, ""
+			}
 	*/
 	var expressions []string
 

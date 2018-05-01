@@ -311,7 +311,7 @@
   branch = "master"
   name = "github.com/sugoiuguu/go-glitch"
   packages = ["."]
-  revision = "777024bd39b90ccc87fb0ab671e8d6bf626cf7cf"
+  revision = "030df656407b083d33317e41b26065c8d1bd9913"
 
 [[projects]]
   name = "github.com/tdewolff/minify"

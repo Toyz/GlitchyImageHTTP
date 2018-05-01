@@ -26,16 +26,16 @@ var saveMode filemodes.SaveMode
 
 func validateFormFeilds(ctx iris.Context) (error, []string, string) {
 	token := ctx.FormValue("token")
-	key := fmt.Sprintf("Upload%s", token)
+	//key := fmt.Sprintf("Upload%s", token)
 	if len(token) <= 0 {
 		return errors.New("Invalid upload token"), nil, ""
 	}
-
-	exist := core.RedisManager.Exist(key)
-	if !exist {
-		return errors.New("Invalid upload token"), nil, ""
-	}
-
+	/*
+		exist := core.RedisManager.Exist(key)
+		if !exist {
+			return errors.New("Invalid upload token"), nil, ""
+		}
+	*/
 	var expressions []string
 
 	exps := ctx.FormValues()

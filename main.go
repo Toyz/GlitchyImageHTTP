@@ -1,13 +1,10 @@
 package main
 
 import (
-	"crypto/md5"
 	"fmt"
-	"io"
 	"log"
 	"math/rand"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -34,12 +31,9 @@ var saveMode filemodes.SaveMode
 var defaultExpressions []string
 
 func Index(ctx iris.Context) {
-	crutime := time.Now().Unix()
-	h := md5.New()
-	io.WriteString(h, strconv.FormatInt(crutime, 10))
-	token := fmt.Sprintf("%x", h.Sum(nil))
+	token := filemodes.GetID("sdlkfjdklfjdskjfhdskajfhs")
 
-	core.RedisManager.Set(fmt.Sprintf("Upload%s", token), token, 30*time.Minute)
+	//core.RedisManager.Set(fmt.Sprintf("Upload%s", token), token, 30*time.Minute)
 	ctx.ViewData("Home", routing.HomePage{
 		Error:      "", //ctx.URLParam("error"),
 		Token:      token,

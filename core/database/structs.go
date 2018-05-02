@@ -35,7 +35,8 @@ type AlertItem struct {
 }
 
 type ExpressionItem struct {
-	MGID       bson.ObjectId `json:"-" bson:"_id,omitempty"`
-	Expression string        `json:"expression"`
-	Usage      int           `json:"count"`
+	MGID          bson.ObjectId `json:"-" bson:"_id,omitempty"`
+	Expression    string        `json:"expression"`
+	ExpressionCmp string        `json:"-" bson:"cid"`
+	Usage         int           `json:"count"`
 }

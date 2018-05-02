@@ -135,7 +135,9 @@ func main() {
 
 		if len(exp.Expression) <= 0 {
 			exp = database.ExpressionItem{
-				id, item, 1,
+				MGID:       id,
+				Expression: item,
+				Usage:      1,
 			}
 
 			database.MongoInstance.InsertExpression(exp)

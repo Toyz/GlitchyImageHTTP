@@ -2,6 +2,7 @@ package routing
 
 import (
 	"github.com/Toyz/GlitchyImageHTTP/core/database"
+	"github.com/Toyz/GlitchyImageHTTP/core/filemodes"
 	"github.com/kataras/iris"
 )
 
@@ -35,7 +36,7 @@ func ViewedImages(mode string, ctx iris.Context) {
 
 		artItems[i] = API_ArtInfo{
 			ID:          item.ID,
-			URL:         item.FullPath,
+			URL:         filemodes.GetFileMode().FullPath(item.Folder, item.FileName),
 			Width:       item.Width,
 			Height:      item.Height,
 			Size:        item.FileSize,
@@ -78,7 +79,7 @@ func ViewImageInfo(ctx iris.Context) {
 
 	artItem := API_ArtInfo{
 		ID:          item.ID,
-		URL:         item.FullPath,
+		URL:         filemodes.GetFileMode().FullPath(item.Folder, item.FileName),
 		Width:       item.Width,
 		Height:      item.Height,
 		Size:        item.FileSize,

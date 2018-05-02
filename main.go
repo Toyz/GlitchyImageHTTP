@@ -67,7 +67,7 @@ func ViewImage(ctx iris.Context) {
 	}
 
 	data := ctx.GetViewData()["Header"].(core.HeaderMetaData)
-	header := core.Render.Header(fmt.Sprintf("%s - View Image %s", data.Title, image.ID), image.FullPath, data.Desc, image.ID)
+	header := core.Render.Header(fmt.Sprintf("%s - View Image %s", data.Title, image.ID), filemodes.GetFileMode().FullPath(image.Folder, image.FileName), data.Desc, image.ID)
 	header.ImageHeight = image.Height
 	header.ImageWidth = image.Width
 
@@ -111,6 +111,7 @@ func main() {
 	})
 
 	tmpEngine := core.Render.Defaults()
+	tmpEngine.AddFunc("image_path", filemodes.GetFileMode().FullPath)
 	app.RegisterView(tmpEngine.ViewEngine)
 
 	app.Get("/", Index)

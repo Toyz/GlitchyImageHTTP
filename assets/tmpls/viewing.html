@@ -19,7 +19,7 @@
       <h4>>> uploaded_on = " {{.Data.Uploaded}} "</h4>
       <h4>>> upload_t_minus = " {{ replace "ago" "" (formatTime .Data.Uploaded) 1 }} "</h4>
       <div class="display">
-        <img src="{{.Data.FullPath}}" />
+        <img src="{{ image_path .Data.Folder .Data.FileName }}" />
       </div>
     </div>
   </div>

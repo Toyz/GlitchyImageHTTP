@@ -79,7 +79,7 @@ func SaveImage(dataBuff *bytes.Buffer, cntType string, OrgFileName string, bound
 	idx := filemodes.GetID(md5Sum)
 	fileName := fmt.Sprintf("%s.%s", md5Sum, core.MimeToExtension(cntType))
 
-	actualFileName, folder := saveMode.Write(buff, fileName)
+	_, folder := saveMode.Write(buff, fileName)
 
 	expression := ""
 	if len(expressions) == 1 {
@@ -91,7 +91,6 @@ func SaveImage(dataBuff *bytes.Buffer, cntType string, OrgFileName string, bound
 		FileName:    fileName,
 		OrgFileName: OrgFileName,
 		Folder:      folder,
-		FullPath:    actualFileName,
 		Expression:  expression,
 		Expressions: expressions,
 		Views:       0,

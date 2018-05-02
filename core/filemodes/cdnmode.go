@@ -80,3 +80,9 @@ func (cdn *CDNMode) Read(path string) []byte {
 func (*CDNMode) Path() string {
 	return strings.TrimSpace(core.GetEnv("AWS_RESOURCE_URL", ""))
 }
+
+func (cdn *CDNMode) FullPath(folder, filename string) string {
+	fullPath := cdn.Path()
+
+	return fmt.Sprintf("%s%s%s", fullPath, folder, filename)
+}

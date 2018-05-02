@@ -12,6 +12,7 @@ type SaveMode interface {
 	Write([]byte, string) (string, string)
 	Read(string) []byte
 	Path() string
+	FullPath(folder, name string) string
 }
 
 var flaky *sonyflake.Sonyflake

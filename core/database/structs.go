@@ -13,7 +13,6 @@ type ArtItem struct {
 	Folder      string    `json:"folder"`
 	FileName    string    `json:"filename"`
 	OrgFileName string    `json:"orgfilename"`
-	FullPath    string    `json:"fullpath"`
 	Expression  string    `json:"expression"`  // set if only one expression is used (can be empty)
 	Expressions []string  `json:"expressions"` // set if multiable are used (will always be 0 if empty)
 	Views       int       `json:"views"`

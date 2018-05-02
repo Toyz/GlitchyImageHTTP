@@ -34,3 +34,7 @@ func (fs *FSMode) Read(path string) []byte {
 func (*FSMode) Path() string {
 	return core.GetEnv("FS_UPLOADS_FOLDER", fmt.Sprintf("%s%s", core.AssetsFolder(), "uploads"))
 }
+
+func (*FSMode) FullPath(folder, filename string) string {
+	return "" // TODO: make this return the local path
+}

@@ -36,7 +36,7 @@ func (mg *mongo) GetUploadInfo(id string) (error, ArtItem) {
 	var image ArtItem
 	c.Find(bson.M{"id": id}).One(&image)
 
-	if len(image.FullPath) <= 0 {
+	if len(image.FileName) <= 0 {
 		return errors.New("item doesn't exist"), ArtItem{}
 	}
 

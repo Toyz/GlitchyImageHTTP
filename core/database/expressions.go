@@ -2,12 +2,15 @@ package database
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 )
 
 func (mg *mongo) UpdateExpression(expression string) ExpressionItem {
+	expression = strings.TrimSpace(expression)
+
 	session, c := mg.collection(EXPRESSION_COL)
 	defer session.Close()
 
@@ -48,6 +51,8 @@ func (mg *mongo) InsertExpression(item ExpressionItem) {
 }
 
 func (mg *mongo) GetExpression(expression string) ExpressionItem {
+	expression = strings.TrimSpace(expression)
+
 	session, c := mg.collection(EXPRESSION_COL)
 	defer session.Close()
 

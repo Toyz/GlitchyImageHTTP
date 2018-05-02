@@ -27,7 +27,8 @@ func (mg *mongo) UpdateExpression(expression string) ExpressionItem {
 	}
 
 	exp = ExpressionItem{
-		expression, 1,
+		Expression: expression,
+		Usage:      1,
 	}
 
 	mg.InsertExpression(exp)

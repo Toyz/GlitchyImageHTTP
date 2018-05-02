@@ -51,8 +51,10 @@ func ViewedImages(mode string, ctx iris.Context) {
 			expItem := database.MongoInstance.GetExpression(exp)
 			if len(expItem.Expression) <= 0 {
 				expItem = database.ExpressionItem{
-					exp, 1,
+					Expression: exp,
+					Usage:      1,
 				}
+				database.MongoInstance.InsertExpression(expItem)
 			}
 
 			artItems[i].Expressions[e] = expItem
@@ -94,8 +96,10 @@ func ViewImageInfo(ctx iris.Context) {
 		expItem := database.MongoInstance.GetExpression(exp)
 		if len(expItem.Expression) <= 0 {
 			expItem = database.ExpressionItem{
-				exp, 1,
+				Expression: exp,
+				Usage:      1,
 			}
+			database.MongoInstance.InsertExpression(expItem)
 		}
 
 		artItem.Expressions[e] = expItem

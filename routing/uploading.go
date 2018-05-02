@@ -16,6 +16,7 @@ import (
 	"github.com/Toyz/GlitchyImageHTTP/core"
 	"github.com/Toyz/GlitchyImageHTTP/core/database"
 	"github.com/Toyz/GlitchyImageHTTP/core/filemodes"
+	"github.com/globalsign/mgo/bson"
 	"github.com/kataras/iris"
 	glitch "github.com/sugoiuguu/go-glitch"
 )
@@ -24,18 +25,6 @@ var allowedFileTypes = []string{"image/jpeg", "image/png", "image/jpg", "image/g
 var saveMode filemodes.SaveMode
 
 func validateFormFeilds(ctx iris.Context) (error, []string, string) {
-	// token := ctx.FormValue("token")
-	//key := fmt.Sprintf("Upload%s", token)
-	/*
-		if len(token) <= 0 {
-			return errors.New("Invalid upload token"), nil, ""
-		}
-
-			exist := core.RedisManager.Exist(key)
-			if !exist {
-				return errors.New("Invalid upload token"), nil, ""
-			}
-	*/
 	var expressions []string
 
 	exps := ctx.FormValues()
@@ -100,13 +89,16 @@ func SaveImage(dataBuff *bytes.Buffer, cntType string, OrgFileName string, bound
 		Height:      bounds.Max.Y,
 	}
 
+	i := bson.NewObjectId()
+	item.MGID = i
+
 	err := database.MongoInstance.WriteUploadInfo(item)
 	if err != nil {
 		buff = nil
 		return err, ""
 	}
 
-	return nil, idx
+	return nil, i.Hex()
 }
 
 func processImage(file multipart.File, mime string, expressions []string) (error, *bytes.Buffer, image.Rectangle) {

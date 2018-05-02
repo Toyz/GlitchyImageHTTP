@@ -3,6 +3,7 @@ package routing
 import (
 	"github.com/Toyz/GlitchyImageHTTP/core/database"
 	"github.com/Toyz/GlitchyImageHTTP/core/filemodes"
+	"github.com/globalsign/mgo/bson"
 	"github.com/kataras/iris"
 )
 
@@ -14,7 +15,19 @@ func ViewedExpressions(mode string, ctx iris.Context) {
 
 	items := database.MongoInstance.GetExpressionsByOrder(mode, limit)
 
-	ctx.JSON(items)
+	expItems := make([]API_Expression, len(items))
+
+	for i := 0; i < len(items); i++ {
+		item := items[i]
+
+		expItems[i] = API_Expression{
+			Expression: item.Expression,
+			ID:         item.MGID.Hex(),
+			Usage:      item.Usage,
+		}
+	}
+
+	ctx.JSON(expItems)
 }
 
 func ViewedImages(mode string, ctx iris.Context) {
@@ -35,14 +48,14 @@ func ViewedImages(mode string, ctx iris.Context) {
 		}
 
 		artItems[i] = API_ArtInfo{
-			ID:          item.ID,
+			ID:          item.MGID.Hex(),
 			URL:         filemodes.GetFileMode().FullPath(item.Folder, item.FileName),
 			Width:       item.Width,
 			Height:      item.Height,
 			Size:        item.FileSize,
 			Views:       item.Views,
 			Uploaded:    item.Uploaded,
-			Expressions: make([]database.ExpressionItem, len(item.Expressions)),
+			Expressions: make([]API_Expression, len(item.Expressions)),
 		}
 
 		for e := 0; e < len(item.Expressions); e++ {
@@ -53,11 +66,17 @@ func ViewedImages(mode string, ctx iris.Context) {
 				expItem = database.ExpressionItem{
 					Expression: exp,
 					Usage:      1,
+					MGID:       bson.NewObjectId(),
 				}
+
 				database.MongoInstance.InsertExpression(expItem)
 			}
 
-			artItems[i].Expressions[e] = expItem
+			artItems[i].Expressions[e] = API_Expression{
+				Expression: expItem.Expression,
+				ID:         expItem.MGID.Hex(),
+				Usage:      expItem.Usage,
+			}
 		}
 	}
 
@@ -80,14 +99,14 @@ func ViewImageInfo(ctx iris.Context) {
 	}
 
 	artItem := API_ArtInfo{
-		ID:          item.ID,
+		ID:          item.MGID.Hex(),
 		URL:         filemodes.GetFileMode().FullPath(item.Folder, item.FileName),
 		Width:       item.Width,
 		Height:      item.Height,
 		Size:        item.FileSize,
 		Views:       item.Views,
 		Uploaded:    item.Uploaded,
-		Expressions: make([]database.ExpressionItem, len(item.Expressions)),
+		Expressions: make([]API_Expression, len(item.Expressions)),
 	}
 
 	for e := 0; e < len(item.Expressions); e++ {
@@ -98,11 +117,16 @@ func ViewImageInfo(ctx iris.Context) {
 			expItem = database.ExpressionItem{
 				Expression: exp,
 				Usage:      1,
+				MGID:       bson.NewObjectId(),
 			}
 			database.MongoInstance.InsertExpression(expItem)
 		}
 
-		artItem.Expressions[e] = expItem
+		artItem.Expressions[e] = API_Expression{
+			Expression: expItem.Expression,
+			ID:         expItem.MGID.Hex(),
+			Usage:      expItem.Usage,
+		}
 	}
 
 	ctx.JSON(artItem)

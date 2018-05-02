@@ -3,10 +3,10 @@
     <div class="row">
       <h4>>> view_image.(id = {{.Data.ID}})</h4>
       {{ if longerThan .Data.Expression 0 }}
-      <h4>>> expression = " {{.Data.Expression}} "</h4>
+      <h4 data-exp-id="{{ get_exp_id .Data.Expression }}">>> expression = " {{.Data.Expression}} "</h4>
       {{ else }}
       {{ range $index, $value := .Data.Expressions }}
-      <h4>>> expression[{{$index}}] = " {{$value}} "</h4>
+      <h4 data-exp-id="{{ get_exp_id $value }}">>> expression[{{$index}}] = " {{$value}} "</h4>
       {{ end }}
       {{ end }}
       {{ if gr .Data.FileSize 0 }}

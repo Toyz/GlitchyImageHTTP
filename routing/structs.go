@@ -2,8 +2,6 @@ package routing
 
 import (
 	"time"
-
-	"github.com/Toyz/GlitchyImageHTTP/core/database"
 )
 
 type HomePage struct {
@@ -21,12 +19,18 @@ type JsonError struct {
 }
 
 type API_ArtInfo struct {
-	ID          string                    `json:"id"`
-	URL         string                    `json:"URL"`
-	Width       int                       `json:"width"`
-	Height      int                       `json:"height"`
-	Size        int                       `json:"size"`
-	Views       int                       `json:"views"`
-	Uploaded    time.Time                 `json:"uploaded"`
-	Expressions []database.ExpressionItem `json:"expressions"`
+	ID          string           `json:"id"`
+	URL         string           `json:"URL"`
+	Width       int              `json:"width"`
+	Height      int              `json:"height"`
+	Size        int              `json:"size"`
+	Views       int              `json:"views"`
+	Uploaded    time.Time        `json:"uploaded"`
+	Expressions []API_Expression `json:"expressions"`
+}
+
+type API_Expression struct {
+	Expression string `json:"expression"`
+	Usage      int    `json:"usage"`
+	ID         string `json:"id"`
 }

@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/globalsign/mgo/bson"
+
 	"github.com/Toyz/GlitchyImageHTTP/core"
 	"github.com/Toyz/GlitchyImageHTTP/core/database"
 	"github.com/Toyz/GlitchyImageHTTP/core/filemodes"
@@ -127,7 +129,26 @@ func main() {
 
 	tmpEngine := core.Render.Defaults()
 	tmpEngine.AddFunc("image_path", filemodes.GetFileMode().FullPath)
+	tmpEngine.AddFunc("get_exp_id", func(item string) string {
+		exp := database.MongoInstance.GetExpression(item)
+		id := bson.NewObjectId()
+
+		if len(exp.Expression) <= 0 {
+			exp = database.ExpressionItem{
+				id, item, 1,
+			}
+
+			database.MongoInstance.InsertExpression(exp)
+		} else {
+			id = exp.MGID
+		}
+
+		return id.Hex()
+	})
+
 	app.RegisterView(tmpEngine.ViewEngine)
+
+	app.StaticWeb("/static", "./assets/public")
 
 	app.Get("/", Index)
 	app.Post("/upload", routing.Upload)
@@ -157,8 +178,6 @@ func main() {
 
 	app.Get("/{image:string}", ViewImage)
 	app.Get("/{image:string}/info.json", routing.ViewImageInfo)
-
-	app.StaticWeb("/static", "./assets/public")
 
 	app.Build()
 

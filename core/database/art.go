@@ -34,7 +34,11 @@ func (mg *mongo) GetUploadInfo(id string) (error, ArtItem) {
 	defer session.Close()
 
 	var image ArtItem
-	c.Find(bson.M{"id": id}).One(&image)
+	if bson.IsObjectIdHex(id) {
+		c.Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&image)
+	} else {
+		c.Find(bson.M{"id": id}).One(&image)
+	}
 
 	if len(image.FileName) <= 0 {
 		return errors.New("item doesn't exist"), ArtItem{}

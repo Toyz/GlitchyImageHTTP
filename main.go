@@ -66,6 +66,21 @@ func ViewImage(ctx iris.Context) {
 		sess.Set("LastViewed", id)
 	}
 
+	// This allows us to add expression to the database if they don't exist...
+	// Hacky but it works
+	for e := 0; e < len(image.Expressions); e++ {
+		exp := image.Expressions[e]
+
+		expItem := database.MongoInstance.GetExpression(exp)
+		if len(expItem.Expression) <= 0 {
+			expItem = database.ExpressionItem{
+				Expression: exp,
+				Usage:      1,
+			}
+			database.MongoInstance.InsertExpression(expItem)
+		}
+	}
+
 	data := ctx.GetViewData()["Header"].(core.HeaderMetaData)
 	header := core.Render.Header(fmt.Sprintf("%s - View Image %s", data.Title, image.ID), filemodes.GetFileMode().FullPath(image.Folder, image.FileName), data.Desc, image.ID)
 	header.ImageHeight = image.Height

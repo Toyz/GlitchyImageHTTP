@@ -56,25 +56,10 @@ func (mg *mongo) GetExpression(expression string) ExpressionItem {
 	session, c := mg.collection(EXPRESSION_COL)
 	defer session.Close()
 
-	index := mgo.Index{
-		Key:        []string{"expression"},
-		Unique:     true,
-		DropDups:   true,
-		Background: true,
-		Sparse:     true,
-	}
-	c.EnsureIndex(index)
-
 	var exp ExpressionItem
 	c.Find(bson.M{"expression": expression}).One(&exp)
 
 	if len(exp.Expression) > 0 {
-		change := mgo.Change{
-			Update:    bson.M{"$inc": bson.M{"usage": 1}},
-			ReturnNew: false,
-		}
-		c.Find(bson.M{"expression": exp.Usage}).Apply(change, &exp)
-		exp.Usage = exp.Usage + 1
 		return exp
 	}
 

@@ -137,6 +137,8 @@ func processImage(file multipart.File, mime string, expressions []string) (error
 				return err, nil, bounds
 			}
 
+			database.MongoInstance.UpdateExpression(expression)
+
 			newImage, err := expr.JumblePixels(out)
 			if err != nil {
 				out = nil
@@ -175,6 +177,7 @@ func gifImage(file multipart.File, expressions []string) (error, *bytes.Buffer, 
 		if err != nil {
 			return err, nil, bounds
 		}
+		database.MongoInstance.UpdateExpression(expression)
 
 		newImage, err := expr.JumbleGIFPixels(out)
 		if err != nil {

@@ -3,8 +3,9 @@ package database
 import "time"
 
 const (
-	ARTIDS_COL = "artIds"
-	ALERTS_COL = "alerts" // unused... Will be used with @AlertItem
+	ARTIDS_COL     = "artIds"
+	ALERTS_COL     = "alerts" // unused... Will be used with @AlertItem
+	EXPRESSION_COL = "expCnt"
 )
 
 type ArtItem struct {
@@ -26,4 +27,9 @@ type AlertItem struct {
 	Key   string  `json:"key"`
 	Value string  `json:"message"`
 	TTL   float64 `json:"ttl"` // Time To Live
+}
+
+type ExpressionItem struct {
+	Expression string `json:"expression"`
+	Usage      int    `json:"count"`
 }

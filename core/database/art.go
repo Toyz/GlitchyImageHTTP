@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
@@ -56,4 +57,15 @@ func (mg *mongo) UploadInfoUpdateViews(art ArtItem) error {
 	}
 
 	return nil
+}
+
+func (mg *mongo) GetArtByOrder(mode string, limit int) []ArtItem {
+	items := make([]ArtItem, limit)
+
+	session, c := mg.collection(ARTIDS_COL)
+	defer session.Close()
+
+	c.Find(bson.M{}).Sort(fmt.Sprintf("%views", mode)).Limit(limit).All(&items)
+
+	return items
 }

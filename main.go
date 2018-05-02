@@ -116,9 +116,9 @@ func main() {
 	app.Get("/", Index)
 	app.Post("/upload", routing.Upload)
 
-	api := app.Party("/api")
+	api := app.Party("/stats")
 	{
-		exp := api.Party("/exp")
+		exp := api.Party("/exps")
 		{
 			exp.Get("/most.json", func(ctx iris.Context) {
 				routing.ViewedExpressions("-", ctx)
@@ -127,9 +127,21 @@ func main() {
 				routing.ViewedExpressions("", ctx)
 			})
 		}
+
+		imgs := api.Party("/imgs")
+		{
+			imgs.Get("/most.json", func(ctx iris.Context) {
+				routing.ViewedImages("-", ctx)
+			})
+			imgs.Get("/least.json", func(ctx iris.Context) {
+				routing.ViewedImages("", ctx)
+			})
+		}
 	}
 
 	app.Get("/{image:string}", ViewImage)
+	app.Get("/{image:string}/info.json", routing.ViewImageInfo)
+
 	app.StaticWeb("/static", "./assets/public")
 
 	app.Build()

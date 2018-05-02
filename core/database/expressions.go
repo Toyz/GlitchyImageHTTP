@@ -81,20 +81,11 @@ func (mg *mongo) GetExpression(expression string) ExpressionItem {
 	return ExpressionItem{}
 }
 
-func (mg *mongo) GetMostUsedExpression(mode string, limit int) []ExpressionItem {
+func (mg *mongo) GetExpressionsByOrder(mode string, limit int) []ExpressionItem {
 	items := make([]ExpressionItem, limit)
 
 	session, c := mg.collection(EXPRESSION_COL)
 	defer session.Close()
-
-	index := mgo.Index{
-		Key:        []string{"expression"},
-		Unique:     true,
-		DropDups:   true,
-		Background: true,
-		Sparse:     true,
-	}
-	c.EnsureIndex(index)
 
 	c.Find(bson.M{}).Sort(fmt.Sprintf("%susage", mode)).Limit(limit).All(&items)
 

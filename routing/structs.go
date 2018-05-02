@@ -13,3 +13,13 @@ type UploadResult struct {
 type JsonError struct {
 	Error string `json:"error,omitempty"`
 }
+
+type API_ArtInfo struct {
+	ID          string   `json:"id"`
+	URL         string   `json:"URL"`
+	Width       int      `json:"width"`
+	Height      int      `json:"height"`
+	Size        int      `json:"size"`
+	Views       int      `json:"views"`
+	Expressions []string `json:"expressions"`
+}

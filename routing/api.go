@@ -36,7 +36,20 @@ func ViewedImages(mode string, ctx iris.Context) {
 			Height:      item.Height,
 			Size:        item.FileSize,
 			Views:       item.Views,
-			Expressions: item.Expressions,
+			Expressions: make([]database.ExpressionItem, len(item.Expressions)),
+		}
+
+		for e := 0; e < len(item.Expressions); e++ {
+			exp := item.Expressions[e]
+
+			expItem := database.MongoInstance.GetExpression(exp)
+			if len(expItem.Expression) <= 0 {
+				expItem = database.ExpressionItem{
+					exp, 1,
+				}
+			}
+
+			artItems[i].Expressions[e] = expItem
 		}
 	}
 
@@ -54,13 +67,28 @@ func ViewImageInfo(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(API_ArtInfo{
+	artItem := API_ArtInfo{
 		ID:          item.ID,
 		URL:         item.FullPath,
 		Width:       item.Width,
 		Height:      item.Height,
 		Size:        item.FileSize,
 		Views:       item.Views,
-		Expressions: item.Expressions,
-	})
+		Expressions: make([]database.ExpressionItem, len(item.Expressions)),
+	}
+
+	for e := 0; e < len(item.Expressions); e++ {
+		exp := item.Expressions[e]
+
+		expItem := database.MongoInstance.GetExpression(exp)
+		if len(expItem.Expression) <= 0 {
+			expItem = database.ExpressionItem{
+				exp, 1,
+			}
+		}
+
+		artItem.Expressions[e] = expItem
+	}
+
+	ctx.JSON(artItem)
 }

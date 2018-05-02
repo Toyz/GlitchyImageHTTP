@@ -1,6 +1,10 @@
 package routing
 
-import "github.com/Toyz/GlitchyImageHTTP/core/database"
+import (
+	"time"
+
+	"github.com/Toyz/GlitchyImageHTTP/core/database"
+)
 
 type HomePage struct {
 	Token      string
@@ -23,5 +27,6 @@ type API_ArtInfo struct {
 	Height      int                       `json:"height"`
 	Size        int                       `json:"size"`
 	Views       int                       `json:"views"`
+	Uploaded    time.Time                 `json:"uploaded"`
 	Expressions []database.ExpressionItem `json:"expressions"`
 }

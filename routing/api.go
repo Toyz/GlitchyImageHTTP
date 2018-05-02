@@ -29,6 +29,10 @@ func ViewedImages(mode string, ctx iris.Context) {
 	for i := 0; i < len(items); i++ {
 		item := items[i]
 
+		if len(item.Expressions) <= 0 && len(item.Expression) > 0 {
+			item.Expressions = append(item.Expressions, item.Expression)
+		}
+
 		artItems[i] = API_ArtInfo{
 			ID:          item.ID,
 			URL:         item.FullPath,
@@ -36,6 +40,7 @@ func ViewedImages(mode string, ctx iris.Context) {
 			Height:      item.Height,
 			Size:        item.FileSize,
 			Views:       item.Views,
+			Uploaded:    item.Uploaded,
 			Expressions: make([]database.ExpressionItem, len(item.Expressions)),
 		}
 
@@ -60,6 +65,10 @@ func ViewImageInfo(ctx iris.Context) {
 	id := ctx.Params().Get("image")
 	err, item := database.MongoInstance.GetUploadInfo(id)
 
+	if len(item.Expressions) <= 0 && len(item.Expression) > 0 {
+		item.Expressions = append(item.Expressions, item.Expression)
+	}
+
 	if err != nil {
 		ctx.JSON(JsonError{
 			Error: err.Error(),
@@ -74,6 +83,7 @@ func ViewImageInfo(ctx iris.Context) {
 		Height:      item.Height,
 		Size:        item.FileSize,
 		Views:       item.Views,
+		Uploaded:    item.Uploaded,
 		Expressions: make([]database.ExpressionItem, len(item.Expressions)),
 	}
 

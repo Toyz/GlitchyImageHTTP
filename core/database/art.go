@@ -65,7 +65,7 @@ func (mg *mongo) GetArtByOrder(mode string, limit int) []ArtItem {
 	session, c := mg.collection(ARTIDS_COL)
 	defer session.Close()
 
-	c.Find(bson.M{}).Sort(fmt.Sprintf("%views", mode)).Limit(limit).All(&items)
+	c.Find(bson.M{}).Sort(fmt.Sprintf("%sviews", mode)).Limit(limit).All(&items)
 
 	return items
 }

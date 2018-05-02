@@ -148,10 +148,7 @@ func (v *AssetTools) ReadFileLines(path string) ([]string, error) {
 		if len(line) <= 0 {
 			continue
 		}
-
-		if !strings.HasPrefix(line, "#") {
-			lines = append(lines, line)
-		}
+		lines = append(lines, line)
 	}
 	return lines, scanner.Err()
 }

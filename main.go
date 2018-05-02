@@ -30,7 +30,7 @@ import (
 
 var allowedFileTypes = []string{"image/jpeg", "image/png", "image/jpg", "image/gif"}
 var saveMode filemodes.SaveMode
-var defaultExpressions []string
+var defaultExpressions []routing.API_Expression
 
 func Index(ctx iris.Context) {
 	token := filemodes.GetID("sdlkfjdklfjdskjfhdskajfhs")
@@ -39,7 +39,7 @@ func Index(ctx iris.Context) {
 	ctx.ViewData("Home", routing.HomePage{
 		Error:      "", //ctx.URLParam("error"),
 		Token:      token,
-		Expression: defaultExpressions[rand.Intn(len(defaultExpressions))],
+		Expression: defaultExpressions[rand.Intn(len(defaultExpressions))].Expression,
 	})
 
 	ctx.View("index.html")
@@ -106,9 +106,27 @@ func main() {
 	core.AssetManager.New()
 
 	saveMode = filemodes.GetFileMode()
-	defaultExpressions, _ = core.AssetManager.ReadFileLines("./assets/glitches.txt")
+	expressionList, _ := core.AssetManager.ReadFileLines("./assets/glitches.txt")
+	expressCat := ""
 
-	//iris.WithPostMaxMemory((10 * datasize.MB).Bytes())
+	for i := 0; i < len(expressionList); i++ {
+		line := strings.TrimSpace(expressionList[i])
+		if strings.HasPrefix(line, "//") {
+			continue
+		}
+
+		if strings.HasPrefix(line, "#") {
+			expressCat = strings.TrimSpace(line[1:])
+			continue
+		}
+		defaultExpressions = append(defaultExpressions, routing.API_Expression{
+			Expression: line,
+			Category:   expressCat,
+			Usage:      1,
+			ID:         bson.NewObjectId().Hex(),
+		})
+	}
+
 	app := iris.New()
 
 	app.Logger().SetLevel("debug")
@@ -155,9 +173,9 @@ func main() {
 	app.Get("/", Index)
 	app.Post("/upload", routing.Upload)
 
-	api := app.Party("/stats")
+	stats := app.Party("/stats")
 	{
-		exp := api.Party("/exps")
+		exp := stats.Party("/exps")
 		{
 			exp.Get("/most.json", func(ctx iris.Context) {
 				routing.ViewedExpressions("-", ctx)
@@ -167,7 +185,7 @@ func main() {
 			})
 		}
 
-		imgs := api.Party("/imgs")
+		imgs := stats.Party("/imgs")
 		{
 			imgs.Get("/most.json", func(ctx iris.Context) {
 				routing.ViewedImages("-", ctx)
@@ -176,6 +194,21 @@ func main() {
 				routing.ViewedImages("", ctx)
 			})
 		}
+	}
+
+	api := app.Party("/api")
+	{
+		api.Get("/expressions.json", func(ctx iris.Context) {
+			for i := 0; i < len(defaultExpressions); i++ {
+				views := database.MongoInstance.GetExpression(defaultExpressions[i].Expression)
+				if len(views.ExpressionCmp) <= 0 {
+					defaultExpressions[i].Usage = 1
+				} else {
+					defaultExpressions[i].Usage = views.Usage
+				}
+			}
+			ctx.JSON(defaultExpressions)
+		})
 	}
 
 	app.Get("/{image:string}", ViewImage)

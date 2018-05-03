@@ -18,6 +18,7 @@ type Upload struct {
 	MGID        bson.ObjectId   `json:"-" bson:"_id,omitempty"`
 	ImageID     bson.ObjectId   `json:"-" bson:"img_id`
 	Expressions []bson.ObjectId `json:"expressions" bson:"exps"` // set if multiable are used (will always be 0 if empty)
+	Tags        []bson.ObjectId `json:"tags"`
 	Views       int             `json:"views"`
 }
 

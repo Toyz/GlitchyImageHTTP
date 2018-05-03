@@ -21,7 +21,8 @@ func (mg *mongo) AddUpload(item Upload) Upload {
 	session, c := mg.collection(UPLOADS_COL)
 	defer session.Close()
 
-	item.MGID = bson.NewObjectId() // needed
+	item.MGID = bson.NewObjectId()       // needed
+	item.Tags = make([]bson.ObjectId, 0) // just cause
 	c.Insert(item)
 
 	return item

@@ -98,6 +98,13 @@ func ViewedImages(mode string, ctx iris.Context) {
 
 func ViewImageInfo(ctx iris.Context) {
 	id := ctx.Params().Get("image")
+	if !bson.IsObjectIdHex(id) {
+		ctx.JSON(JsonError{
+			Error: "Invalid ID",
+		})
+		return
+	}
+
 	upload := database.MongoInstance.GetUpload(bson.ObjectIdHex(id))
 	image := database.MongoInstance.GetImageInfo(upload.ImageID)
 

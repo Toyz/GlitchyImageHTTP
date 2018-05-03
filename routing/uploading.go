@@ -101,7 +101,7 @@ func SaveImage(dataBuff *bytes.Buffer, cntType string, OrgFileName string, bound
 	uploadInfo := database.Upload{
 		ImageID:     art.MGID,
 		Expressions: expressionIds,
-		Views:       1,
+		Views:       0,
 	}
 
 	upload := database.MongoInstance.AddUpload(uploadInfo)

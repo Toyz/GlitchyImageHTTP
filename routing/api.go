@@ -13,18 +13,31 @@ func ViewedExpressions(mode string, ctx iris.Context) {
 		limit = 20
 	}
 
-	items := database.MongoInstance.GetExpressionsByOrder(mode, limit)
+	items := database.MongoInstance.OrderExpression(mode, limit)
 
 	expItems := make([]API_Expression, len(items))
 
-	for i := 0; i < len(items); i++ {
-		item := items[i]
-
-		expItems[i] = API_Expression{
+	for e := 0; e < len(items); e++ {
+		item := items[e]
+		expItem := API_Expression{
 			Expression: item.Expression,
-			ID:         item.MGID.Hex(),
 			Usage:      item.Usage,
+			ID:         item.MGID.Hex(),
+			Categories: make([]API_Category, len(item.CatIDs)),
 		}
+
+		if len(item.CatIDs) > 0 {
+			for c := 0; c < len(item.CatIDs); c++ {
+				cat := database.MongoInstance.GetCategory(item.CatIDs[c])
+
+				expItem.Categories[c] = API_Category{
+					Name: cat.Name,
+					ID:   cat.MGID.Hex(),
+				}
+			}
+		}
+
+		expItems[e] = expItem
 	}
 
 	ctx.JSON(expItems)
@@ -36,47 +49,47 @@ func ViewedImages(mode string, ctx iris.Context) {
 		limit = 20
 	}
 
-	items := database.MongoInstance.GetArtByOrder(mode, limit)
+	items := database.MongoInstance.OrderUploads(mode, limit)
 
 	artItems := make([]API_ArtInfo, len(items))
 
 	for i := 0; i < len(items); i++ {
 		item := items[i]
-
-		if len(item.Expressions) <= 0 && len(item.Expression) > 0 {
-			item.Expressions = append(item.Expressions, item.Expression)
-		}
+		imageMeta := database.MongoInstance.GetImageInfo(item.ImageID)
 
 		artItems[i] = API_ArtInfo{
 			ID:          item.MGID.Hex(),
-			URL:         filemodes.GetFileMode().FullPath(item.Folder, item.FileName),
-			Width:       item.Width,
-			Height:      item.Height,
-			Size:        item.FileSize,
+			URL:         filemodes.GetFileMode().FullPath(imageMeta.Folder, imageMeta.FileName),
+			Width:       imageMeta.Width,
+			Height:      imageMeta.Height,
+			Size:        imageMeta.FileSize,
 			Views:       item.Views,
-			Uploaded:    item.Uploaded,
+			Uploaded:    imageMeta.Uploaded,
 			Expressions: make([]API_Expression, len(item.Expressions)),
 		}
 
 		for e := 0; e < len(item.Expressions); e++ {
 			exp := item.Expressions[e]
+			item := database.MongoInstance.GetExpression(exp)
+			expItem := API_Expression{
+				Expression: item.Expression,
+				Usage:      item.Usage,
+				ID:         item.MGID.Hex(),
+				Categories: make([]API_Category, len(item.CatIDs)),
+			}
 
-			expItem := database.MongoInstance.GetExpression(exp)
-			if len(expItem.Expression) <= 0 {
-				expItem = database.ExpressionItem{
-					Expression: exp,
-					Usage:      1,
-					MGID:       bson.NewObjectId(),
+			if len(item.CatIDs) > 0 {
+				for c := 0; c < len(item.CatIDs); c++ {
+					cat := database.MongoInstance.GetCategory(item.CatIDs[c])
+
+					expItem.Categories[c] = API_Category{
+						Name: cat.Name,
+						ID:   cat.MGID.Hex(),
+					}
 				}
-
-				database.MongoInstance.InsertExpression(expItem)
 			}
 
-			artItems[i].Expressions[e] = API_Expression{
-				Expression: expItem.Expression,
-				ID:         expItem.MGID.Hex(),
-				Usage:      expItem.Usage,
-			}
+			artItems[i].Expressions[e] = expItem
 		}
 	}
 
@@ -85,48 +98,42 @@ func ViewedImages(mode string, ctx iris.Context) {
 
 func ViewImageInfo(ctx iris.Context) {
 	id := ctx.Params().Get("image")
-	err, item := database.MongoInstance.GetUploadInfo(id)
-
-	if len(item.Expressions) <= 0 && len(item.Expression) > 0 {
-		item.Expressions = append(item.Expressions, item.Expression)
-	}
-
-	if err != nil {
-		ctx.JSON(JsonError{
-			Error: err.Error(),
-		})
-		return
-	}
+	upload := database.MongoInstance.GetUpload(bson.ObjectIdHex(id))
+	image := database.MongoInstance.GetImageInfo(upload.ImageID)
 
 	artItem := API_ArtInfo{
-		ID:          item.MGID.Hex(),
-		URL:         filemodes.GetFileMode().FullPath(item.Folder, item.FileName),
-		Width:       item.Width,
-		Height:      item.Height,
-		Size:        item.FileSize,
-		Views:       item.Views,
-		Uploaded:    item.Uploaded,
-		Expressions: make([]API_Expression, len(item.Expressions)),
+		ID:          upload.MGID.Hex(),
+		URL:         filemodes.GetFileMode().FullPath(image.Folder, image.FileName),
+		Width:       image.Width,
+		Height:      image.Height,
+		Size:        image.FileSize,
+		Views:       upload.Views,
+		Uploaded:    image.Uploaded,
+		Expressions: make([]API_Expression, len(upload.Expressions)),
 	}
 
-	for e := 0; e < len(item.Expressions); e++ {
-		exp := item.Expressions[e]
+	for e := 0; e < len(upload.Expressions); e++ {
+		exp := upload.Expressions[e]
+		item := database.MongoInstance.GetExpression(exp)
+		expItem := API_Expression{
+			Expression: item.Expression,
+			Usage:      item.Usage,
+			ID:         item.MGID.Hex(),
+			Categories: make([]API_Category, len(item.CatIDs)),
+		}
 
-		expItem := database.MongoInstance.GetExpression(exp)
-		if len(expItem.Expression) <= 0 {
-			expItem = database.ExpressionItem{
-				Expression: exp,
-				Usage:      1,
-				MGID:       bson.NewObjectId(),
+		if len(item.CatIDs) > 0 {
+			for c := 0; c < len(item.CatIDs); c++ {
+				cat := database.MongoInstance.GetCategory(item.CatIDs[c])
+
+				expItem.Categories[c] = API_Category{
+					Name: cat.Name,
+					ID:   cat.MGID.Hex(),
+				}
 			}
-			database.MongoInstance.InsertExpression(expItem)
 		}
 
-		artItem.Expressions[e] = API_Expression{
-			Expression: expItem.Expression,
-			ID:         expItem.MGID.Hex(),
-			Usage:      expItem.Usage,
-		}
+		artItem.Expressions[e] = expItem
 	}
 
 	ctx.JSON(artItem)

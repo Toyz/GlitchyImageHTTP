@@ -50,46 +50,40 @@ func ViewImage(ctx iris.Context) {
 
 	id := ctx.Params().Get("image")
 
-	err, image := database.MongoInstance.GetUploadInfo(id)
-	if err != nil {
+	if !bson.IsObjectIdHex(id) {
 		ctx.Redirect("/")
 		return
 	}
 
+	upload := database.MongoInstance.GetUpload(bson.ObjectIdHex(id))
+	image := database.MongoInstance.GetImageInfo(upload.ImageID)
+
 	lastViewed := sess.GetStringDefault("LastViewed", "")
 
 	if len(lastViewed) <= 0 || !strings.EqualFold(lastViewed, id) {
-		err := database.MongoInstance.UploadInfoUpdateViews(image)
+		err := database.MongoInstance.IncUploadViews(upload.MGID)
 		if err != nil {
 			log.Println(err)
 		}
 
-		image.Views = image.Views + 1 // hack... Gets around the offset not being defined...
+		upload.Views = upload.Views + 1
 		sess.Set("LastViewed", id)
 	}
 
-	// This allows us to add expression to the database if they don't exist...
-	// Hacky but it works
-	for e := 0; e < len(image.Expressions); e++ {
-		exp := image.Expressions[e]
-
-		expItem := database.MongoInstance.GetExpression(exp)
-		if len(expItem.Expression) <= 0 {
-			expItem = database.ExpressionItem{
-				Expression: exp,
-				Usage:      1,
-			}
-			database.MongoInstance.InsertExpression(expItem)
-		}
+	expressions := make([]database.ExpressionItem, len(upload.Expressions))
+	for e := 0; e < len(upload.Expressions); e++ {
+		expressions[e] = database.MongoInstance.GetExpression(upload.Expressions[e])
 	}
 
 	data := ctx.GetViewData()["Header"].(core.HeaderMetaData)
-	header := core.Render.Header(fmt.Sprintf("Viewing %s", image.MGID.Hex()), filemodes.GetFileMode().FullPath(image.Folder, image.FileName), data.Desc, image.ID)
+	header := core.Render.Header(fmt.Sprintf("Viewing %s", image.MGID.Hex()), filemodes.GetFileMode().FullPath(image.Folder, image.FileName), data.Desc, upload.MGID.Hex())
 	header.ImageHeight = image.Height
 	header.ImageWidth = image.Width
 
 	ctx.ViewData("Header", header)
-	ctx.ViewData("Data", image)
+	ctx.ViewData("Image", image)
+	ctx.ViewData("Upload", upload)
+	ctx.ViewData("Exps", expressions)
 	ctx.ViewData("BodyClass", "image")
 
 	ctx.View("viewing.html")
@@ -107,7 +101,7 @@ func main() {
 
 	saveMode = filemodes.GetFileMode()
 	expressionList, _ := core.AssetManager.ReadFileLines("./assets/glitches.txt")
-	expressCat := ""
+	var expressCat *routing.API_Category
 
 	for i := 0; i < len(expressionList); i++ {
 		line := strings.TrimSpace(expressionList[i])
@@ -116,14 +110,47 @@ func main() {
 		}
 
 		if strings.HasPrefix(line, "#") {
-			expressCat = strings.TrimSpace(line[1:])
+			catName := strings.TrimSpace(line[1:])
+			cat := database.MongoInstance.GetCategoryByName(catName)
+			if len(cat.Name) <= 0 {
+				cat = database.MongoInstance.AddCategory(database.CategoryItem{
+					Name: catName,
+				})
+			}
+
+			expressCat = &routing.API_Category{
+				Name: cat.Name,
+				ID:   cat.MGID.Hex(),
+			}
 			continue
 		}
+
+		exp := database.MongoInstance.GetExpressionByName(line)
+		if len(exp.ExpressionCmp) <= 0 {
+			catIds := make([]bson.ObjectId, 1)
+			catIds[0] = bson.ObjectIdHex(expressCat.ID)
+
+			exp = database.MongoInstance.AddExpression(database.ExpressionItem{
+				Expression: line,
+				Usage:      1,
+				CatIDs:     catIds,
+			})
+		}
+
+		catsAll := make([]routing.API_Category, len(exp.CatIDs))
+		for c := 0; c < len(exp.CatIDs); c++ {
+			cat := database.MongoInstance.GetCategory(exp.CatIDs[c])
+			catsAll[c] = routing.API_Category{
+				Name: cat.Name,
+				ID:   cat.MGID.Hex(),
+			}
+		}
+
 		defaultExpressions = append(defaultExpressions, routing.API_Expression{
-			Expression: line,
-			Category:   expressCat,
-			Usage:      1,
-			ID:         bson.NewObjectId().Hex(),
+			Expression: exp.Expression,
+			Categories: catsAll,
+			Usage:      exp.Usage,
+			ID:         exp.MGID.Hex(),
 		})
 	}
 
@@ -147,24 +174,6 @@ func main() {
 
 	tmpEngine := core.Render.Defaults()
 	tmpEngine.AddFunc("image_path", filemodes.GetFileMode().FullPath)
-	tmpEngine.AddFunc("get_exp_id", func(item string) string {
-		exp := database.MongoInstance.GetExpression(item)
-		id := bson.NewObjectId()
-
-		if len(exp.Expression) <= 0 {
-			exp = database.ExpressionItem{
-				MGID:       id,
-				Expression: item,
-				Usage:      1,
-			}
-
-			database.MongoInstance.InsertExpression(exp)
-		} else {
-			id = exp.MGID
-		}
-
-		return id.Hex()
-	})
 
 	app.RegisterView(tmpEngine.ViewEngine)
 
@@ -200,7 +209,7 @@ func main() {
 	{
 		api.Get("/expressions.json", func(ctx iris.Context) {
 			for i := 0; i < len(defaultExpressions); i++ {
-				views := database.MongoInstance.GetExpression(defaultExpressions[i].Expression)
+				views := database.MongoInstance.GetExpressionByName(defaultExpressions[i].Expression)
 				if len(views.ExpressionCmp) <= 0 {
 					defaultExpressions[i].Usage = 1
 				} else {

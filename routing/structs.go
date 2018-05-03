@@ -30,8 +30,13 @@ type API_ArtInfo struct {
 }
 
 type API_Expression struct {
-	Expression string `json:"expression"`
-	Category   string `json:"category,omitempty"`
-	Usage      int    `json:"usage"`
-	ID         string `json:"id"`
+	Expression string         `json:"expression"`
+	Categories []API_Category `json:"categories,omitempty"`
+	Usage      int            `json:"usage"`
+	ID         string         `json:"id"`
+}
+
+type API_Category struct {
+	Name string `json:"name"`
+	ID   string `json:"id"`
 }

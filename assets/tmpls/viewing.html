@@ -1,25 +1,21 @@
 <section class="image">
   <div class="container">
     <div class="row">
-      <h4>>> view_image.(id = {{.Data.ID}})</h4>
-      {{ if longerThan .Data.Expression 0 }}
-      <h4 data-exp-id="{{ get_exp_id .Data.Expression }}">>> expression = " {{.Data.Expression}} "</h4>
-      {{ else }}
-      {{ range $index, $value := .Data.Expressions }}
-      <h4 data-exp-id="{{ get_exp_id $value }}">>> expression[{{$index}}] = " {{$value}} "</h4>
+      <h4>>> view_image.(id = {{.Upload.MGID.Hex }})</h4>
+      {{ range $index, $value := .Exps }}
+      <h4 data-exp-id="{{ $value.MGID.Hex }}">>> expression[{{$index}}] = " {{ $value.Expression }} "</h4>
       {{ end }}
-      {{ end }}
-      {{ if gr .Data.FileSize 0 }}
-      <h4>>> image_size = " {{ formatFS .Data.FileSize }} "</h4>  
+      {{ if gr .Image.FileSize 0 }}
+      <h4>>> image_size = " {{ formatFS .Image.FileSize }} "</h4>  
       {{ end }}    
-      {{ if (gr .Data.Width 0) and (gr .Data.Height 0)}}
-      <h4>>> image_bounds = " {{ .Data.Width }} x {{ .Data.Height }} "</h4> 
+      {{ if (gr .Image.Width 0) and (gr .Image.Height 0)}}
+      <h4>>> image_bounds = " {{ .Image.Width }} x {{ .Image.Height }} "</h4> 
       {{ end }}     
-      <h4>>> total_views = {{.Data.Views}}</h4>
-      <h4>>> uploaded_on = " {{.Data.Uploaded}} "</h4>
-      <h4>>> upload_t_minus = " {{ replace "ago" "" (formatTime .Data.Uploaded) 1 }} "</h4>
+      <h4>>> total_views = {{.Upload.Views}}</h4>
+      <h4>>> uploaded_on = " {{.Image.Uploaded}} "</h4>
+      <h4>>> upload_t_minus = " {{ replace "ago" "" (formatTime .Image.Uploaded) 1 }} "</h4>
       <div class="display">
-        <img src="{{ image_path .Data.Folder .Data.FileName }}" />
+        <img src="{{ image_path .Image.Folder .Image.FileName }}" />
       </div>
     </div>
   </div>

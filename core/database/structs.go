@@ -9,18 +9,23 @@ import (
 const (
 	ARTIDS_COL     = "artIds"
 	ALERTS_COL     = "alerts" // unused... Will be used with @AlertItem
-	EXPRESSION_COL = "expCnt"
+	EXPRESSION_COL = "exps"
+	CATEGORY_COL   = "cats"
+	UPLOADS_COL    = "uploads"
 )
+
+type Upload struct {
+	MGID        bson.ObjectId   `json:"-" bson:"_id,omitempty"`
+	ImageID     bson.ObjectId   `json:"-" bson:"img_id`
+	Expressions []bson.ObjectId `json:"expressions" bson:"exps"` // set if multiable are used (will always be 0 if empty)
+	Views       int             `json:"views"`
+}
 
 type ArtItem struct {
 	MGID        bson.ObjectId `json:"-" bson:"_id,omitempty"`
-	ID          string        `json:"id"`
 	Folder      string        `json:"folder"`
 	FileName    string        `json:"filename"`
 	OrgFileName string        `json:"orgfilename"`
-	Expression  string        `json:"expression"`  // set if only one expression is used (can be empty)
-	Expressions []string      `json:"expressions"` // set if multiable are used (will always be 0 if empty)
-	Views       int           `json:"views"`
 	Uploaded    time.Time     `json:"uploaded_on"`
 	FileSize    int           `json:"file_size"`
 	Width       int           `json:"width"`
@@ -35,8 +40,14 @@ type AlertItem struct {
 }
 
 type ExpressionItem struct {
-	MGID          bson.ObjectId `json:"-" bson:"_id,omitempty"`
-	Expression    string        `json:"expression"`
-	ExpressionCmp string        `json:"-" bson:"cid"`
-	Usage         int           `json:"count"`
+	MGID          bson.ObjectId   `json:"-" bson:"_id,omitempty"`
+	Expression    string          `json:"expression"`
+	ExpressionCmp string          `json:"-" bson:"cid"`
+	Usage         int             `json:"count"`
+	CatIDs        []bson.ObjectId `json:"-" bson:"cats"` //enfoce using the bson object because this shit can fail...
+}
+
+type CategoryItem struct {
+	MGID bson.ObjectId `json:"-" bson:"_id,omitempty"`
+	Name string        `json:"name"`
 }

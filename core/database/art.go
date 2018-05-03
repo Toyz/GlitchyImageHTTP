@@ -1,14 +1,13 @@
 package database
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 )
 
-func (mg *mongo) WriteUploadInfo(upload *ArtItem) error {
+func (mg *mongo) SetImageInfo(upload ArtItem) ArtItem {
 	session, c := mg.collection(ARTIDS_COL)
 	defer session.Close()
 
@@ -21,46 +20,27 @@ func (mg *mongo) WriteUploadInfo(upload *ArtItem) error {
 	}
 	c.EnsureIndex(index)
 
+	upload.MGID = bson.NewObjectId()
 	err := c.Insert(upload)
 	if err != nil {
-		return err
+		return ArtItem{}
 	}
 
-	return nil
+	return upload
 }
 
-func (mg *mongo) GetUploadInfo(id string) (error, ArtItem) {
+func (mg *mongo) GetImageInfo(id bson.ObjectId) ArtItem {
 	session, c := mg.collection(ARTIDS_COL)
 	defer session.Close()
 
 	var image ArtItem
-	if bson.IsObjectIdHex(id) {
-		c.Find(bson.M{"_id": bson.ObjectIdHex(id)}).One(&image)
-	} else {
-		c.Find(bson.M{"id": id}).One(&image)
-	}
+	c.Find(bson.M{"_id": id}).One(&image)
 
 	if len(image.FileName) <= 0 {
-		return errors.New("item doesn't exist"), ArtItem{}
+		return ArtItem{}
 	}
 
-	return nil, image
-}
-
-func (mg *mongo) UploadInfoUpdateViews(art ArtItem) error {
-	session, c := mg.collection(ARTIDS_COL)
-	defer session.Close()
-
-	change := mgo.Change{
-		Update:    bson.M{"$inc": bson.M{"views": 1}},
-		ReturnNew: false,
-	}
-	_, err := c.Find(bson.M{"id": art.ID}).Apply(change, &art)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return image
 }
 
 func (mg *mongo) GetArtByOrder(mode string, limit int) []ArtItem {

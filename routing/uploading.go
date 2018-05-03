@@ -13,10 +13,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/globalsign/mgo/bson"
+
 	"github.com/Toyz/GlitchyImageHTTP/core"
 	"github.com/Toyz/GlitchyImageHTTP/core/database"
 	"github.com/Toyz/GlitchyImageHTTP/core/filemodes"
-	"github.com/globalsign/mgo/bson"
 	"github.com/kataras/iris"
 	glitch "github.com/sugoiuguu/go-glitch"
 )
@@ -65,40 +66,47 @@ func SaveImage(dataBuff *bytes.Buffer, cntType string, OrgFileName string, bound
 	defer dataBuff.Reset()
 
 	md5Sum := core.GetMD5(buff)
-	idx := filemodes.GetID(md5Sum)
 	fileName := fmt.Sprintf("%s.%s", md5Sum, core.MimeToExtension(cntType))
 
 	_, folder := saveMode.Write(buff, fileName)
 
-	expression := ""
-	if len(expressions) == 1 {
-		expression = expressions[0]
+	expressionIds := make([]bson.ObjectId, len(expressions))
+	for e := 0; e < len(expressions); e++ {
+		exp := expressions[e]
+		local := database.MongoInstance.GetExpressionByName(exp)
+
+		if len(local.ExpressionCmp) > 0 {
+			expressionIds[e] = local.MGID
+			continue
+		}
+
+		local = database.MongoInstance.AddExpression(database.ExpressionItem{
+			Expression: exp,
+		})
+
+		expressionIds[e] = local.MGID
 	}
 
-	item := &database.ArtItem{
-		ID:          idx,
+	item := database.ArtItem{
 		FileName:    fileName,
 		OrgFileName: OrgFileName,
 		Folder:      folder,
-		Expression:  expression,
-		Expressions: expressions,
-		Views:       0,
 		Uploaded:    time.Now(),
 		FileSize:    binary.Size(buff),
 		Width:       bounds.Max.X,
 		Height:      bounds.Max.Y,
 	}
 
-	i := bson.NewObjectId()
-	item.MGID = i
-
-	err := database.MongoInstance.WriteUploadInfo(item)
-	if err != nil {
-		buff = nil
-		return err, ""
+	art := database.MongoInstance.SetImageInfo(item)
+	uploadInfo := database.Upload{
+		ImageID:     art.MGID,
+		Expressions: expressionIds,
+		Views:       1,
 	}
 
-	return nil, i.Hex()
+	upload := database.MongoInstance.AddUpload(uploadInfo)
+
+	return nil, upload.MGID.Hex()
 }
 
 func processImage(file multipart.File, mime string, expressions []string) (error, *bytes.Buffer, image.Rectangle) {
@@ -128,7 +136,14 @@ func processImage(file multipart.File, mime string, expressions []string) (error
 				return err, nil, bounds
 			}
 
-			database.MongoInstance.UpdateExpression(expression)
+			exp := database.MongoInstance.GetExpressionByName(expression)
+			if len(exp.ExpressionCmp) > 0 {
+				database.MongoInstance.UpdateExpressionUsage(exp.MGID)
+			} else {
+				database.MongoInstance.AddExpression(database.ExpressionItem{
+					Expression: expression,
+				})
+			}
 
 			newImage, err := expr.JumblePixels(out)
 			if err != nil {
@@ -168,7 +183,15 @@ func gifImage(file multipart.File, expressions []string) (error, *bytes.Buffer, 
 		if err != nil {
 			return err, nil, bounds
 		}
-		database.MongoInstance.UpdateExpression(expression)
+
+		exp := database.MongoInstance.GetExpressionByName(expression)
+		if len(exp.ExpressionCmp) > 0 {
+			database.MongoInstance.UpdateExpressionUsage(exp.MGID)
+		} else {
+			database.MongoInstance.AddExpression(database.ExpressionItem{
+				Expression: expression,
+			})
+		}
 
 		newImage, err := expr.JumbleGIFPixels(out)
 		if err != nil {

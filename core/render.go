@@ -73,6 +73,10 @@ func (render *render) Defaults() *render {
 		return ""
 	})
 
+	render.AddFunc("join", func(sep string, params ...string) string {
+		return strings.Join(params, sep)
+	})
+
 	render.AddFunc("replace", func(from string, to string, word string, number int) string {
 		return strings.Replace(word, from, to, number)
 	})

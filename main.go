@@ -89,18 +89,7 @@ func ViewImage(ctx iris.Context) {
 	ctx.View("viewing.html")
 }
 
-func main() {
-	rand.Seed(time.Now().Unix())
-
-	core.NewRedis()
-	core.NewSessions()
-
-	database.NewMongo()
-	core.Render.New()
-	core.AssetManager.New()
-
-	saveMode = filemodes.GetFileMode()
-	expressionList, _ := core.AssetManager.ReadFileLines("./assets/glitches.txt")
+func loadExpressions(expressionList []string) {
 	var expressCat *routing.API_Category
 
 	for i := 0; i < len(expressionList); i++ {
@@ -153,6 +142,21 @@ func main() {
 			ID:         exp.MGID.Hex(),
 		})
 	}
+}
+
+func main() {
+	rand.Seed(time.Now().Unix())
+
+	core.NewRedis()
+	core.NewSessions()
+
+	database.NewMongo()
+	core.Render.New()
+	core.AssetManager.New()
+
+	saveMode = filemodes.GetFileMode()
+	expressionList, _ := core.AssetManager.ReadFileLines("./assets/glitches.txt")
+	loadExpressions(expressionList)
 
 	app := iris.New()
 

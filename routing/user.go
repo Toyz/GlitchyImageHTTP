@@ -16,6 +16,11 @@ const (
 )
 
 func UserJoin(ctx iris.Context) {
+	data := ctx.GetViewData()["Header"].(core.HeaderMetaData)
+
+	data.Title = "Register"
+	ctx.ViewData("Header", data)
+	ctx.View("register.html")
 }
 
 func UserLogin(ctx iris.Context) {

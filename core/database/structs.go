@@ -12,6 +12,7 @@ const (
 	EXPRESSION_COL = "exps"
 	CATEGORY_COL   = "cats"
 	UPLOADS_COL    = "uploads"
+	USERS_COL      = "users"
 )
 
 type Upload struct {
@@ -19,6 +20,7 @@ type Upload struct {
 	ImageID     bson.ObjectId   `json:"-" bson:"img_id`
 	Expressions []bson.ObjectId `json:"expressions" bson:"exps"` // set if multiable are used (will always be 0 if empty)
 	Tags        []bson.ObjectId `json:"tags"`
+	User        bson.ObjectId   `json:"user" bson:"user"`
 	Views       int             `json:"views"`
 }
 
@@ -51,4 +53,11 @@ type ExpressionItem struct {
 type CategoryItem struct {
 	MGID bson.ObjectId `json:"-" bson:"_id,omitempty"`
 	Name string        `json:"name"`
+}
+
+type User struct {
+	MGID     bson.ObjectId `json:"-" bson:"_id,omitempty"`
+	Email    string        `json:"-"`
+	Username string        `json:"-"`
+	Password string        `json:"-"`
 }

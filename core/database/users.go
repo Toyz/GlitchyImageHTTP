@@ -1,6 +1,7 @@
 package database
 
 import (
+	"strings"
 	"time"
 
 	"github.com/globalsign/mgo/bson"
@@ -10,6 +11,7 @@ func (mg *mongo) GetUserByEmail(email string) User {
 	session, c := mg.collection(USERS_COL)
 	defer session.Close()
 
+	email = strings.ToLower(email)
 	var usr User
 	c.Find(bson.M{"email": email}).One(&usr)
 
@@ -38,6 +40,9 @@ func (mg *mongo) GetUserByID(id bson.ObjectId) User {
 func (mg *mongo) InsertUser(user User) User {
 	session, c := mg.collection(USERS_COL)
 	defer session.Close()
+
+	user.Email = strings.ToLower(user.Email)
+	user.Username = strings.ToLower(user.Email)
 
 	user.MGID = bson.NewObjectId()
 	user.Joined = time.Now()

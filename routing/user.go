@@ -1,7 +1,6 @@
 package routing
 
 import (
-	"log"
 	"strings"
 
 	"github.com/Toyz/GlitchyImageHTTP/core"
@@ -17,20 +16,14 @@ const (
 )
 
 func UserJoin(ctx iris.Context) {
-	sess := core.SessionManager.Session.Start(ctx)
-
-	if sess.GetBooleanDefault("logged_in", false) {
-		d := sess.Get("user").(map[string]interface{})
-
-		log.Println(d["id"])
-		log.Println(d["email"])
-		log.Println(d["username"])
-	}
-
 }
 
 func UserLogin(ctx iris.Context) {
+	data := ctx.GetViewData()["Header"].(core.HeaderMetaData)
 
+	data.Title = "Login"
+	ctx.ViewData("Header", data)
+	ctx.View("login.html")
 }
 
 func UserProfile(ctx iris.Context) {

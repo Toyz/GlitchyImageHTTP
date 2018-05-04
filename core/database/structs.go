@@ -20,7 +20,7 @@ type Upload struct {
 	ImageID     bson.ObjectId   `json:"-" bson:"img_id`
 	Expressions []bson.ObjectId `json:"expressions" bson:"exps"` // set if multiable are used (will always be 0 if empty)
 	Tags        []bson.ObjectId `json:"tags"`
-	User        bson.ObjectId   `json:"user" bson:"user"`
+	User        bson.ObjectId   `json:"user" bson:"user,omitempty"`
 	Views       int             `json:"views"`
 }
 

@@ -61,7 +61,7 @@ func validateFileUpload(ctx iris.Context) (error, multipart.File, *multipart.Fil
 	return nil, file, fHeader, cntType
 }
 
-func SaveImage(dataBuff *bytes.Buffer, cntType string, OrgFileName string, bounds image.Rectangle, expressions []string) (error, string) {
+func SaveImage(dataBuff *bytes.Buffer, cntType string, OrgFileName string, bounds image.Rectangle, expressions []string, userId string) (error, string) {
 	buff := dataBuff.Bytes()
 	defer dataBuff.Reset()
 
@@ -97,11 +97,23 @@ func SaveImage(dataBuff *bytes.Buffer, cntType string, OrgFileName string, bound
 		Height:      bounds.Max.Y,
 	}
 
+	var uploaderId bson.ObjectId
+	if len(userId) > 0 {
+		if bson.IsObjectIdHex(userId) {
+			uploaderId = bson.ObjectIdHex(userId)
+		} else {
+			uploaderId = ""
+		}
+	} else {
+		uploaderId = ""
+	}
+
 	art := database.MongoInstance.SetImageInfo(item)
 	uploadInfo := database.Upload{
 		ImageID:     art.MGID,
 		Expressions: expressionIds,
 		Views:       0,
+		User:        uploaderId,
 	}
 
 	upload := database.MongoInstance.AddUpload(uploadInfo)
@@ -211,6 +223,8 @@ func gifImage(file multipart.File, expressions []string) (error, *bytes.Buffer, 
 }
 
 func Upload(ctx iris.Context) {
+	sess := core.SessionManager.Session.Start(ctx)
+
 	saveMode = filemodes.GetFileMode()
 
 	ctx.SetMaxRequestBodySize(65 << 20) // 65mb because we can
@@ -239,7 +253,13 @@ func Upload(ctx iris.Context) {
 		return
 	}
 
-	err, id := SaveImage(data, mime, header.Filename, bounds, expressions)
+	userId := ""
+
+	if sess.GetBooleanDefault("logged_in", false) {
+		d := sess.Get("user").(map[string]interface{})
+		userId = d["id"].(string)
+	}
+	err, id := SaveImage(data, mime, header.Filename, bounds, expressions, userId)
 	if err != nil {
 		ctx.JSON(JsonError{
 			Error: err.Error(),

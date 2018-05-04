@@ -80,9 +80,17 @@ func ViewImage(ctx iris.Context) {
 	header.ImageHeight = image.Height
 	header.ImageWidth = image.Width
 
+	user := database.User{}
+	if upload.User.Valid() {
+		user = database.MongoInstance.GetUserByID(upload.User)
+		user.Password = ""
+		user.Email = ""
+	}
+
 	ctx.ViewData("Header", header)
 	ctx.ViewData("Image", image)
 	ctx.ViewData("Upload", upload)
+	ctx.ViewData("Uploader", user)
 	ctx.ViewData("Exps", expressions)
 	ctx.ViewData("BodyClass", "image")
 
@@ -205,14 +213,14 @@ func main() {
 		{
 			tools.Get("/register", routing.UserJoin)
 			tools.Get("/signin", routing.UserLogin)
+			tools.Get("/logout", func(ctx iris.Context) {
+				routing.UserTool(routing.LOGOUT_USER, ctx)
+			})
 			tools.Post("/register", func(ctx iris.Context) {
 				routing.UserTool(routing.CREATE_USER, ctx)
 			})
 			tools.Post("/signin", func(ctx iris.Context) {
 				routing.UserTool(routing.LOGIN_USER, ctx)
-			})
-			tools.Post("/logout", func(ctx iris.Context) {
-				routing.UserTool(routing.LOGOUT_USER, ctx)
 			})
 		}
 

@@ -2,6 +2,9 @@
   <div class="container">
     <div class="row">
       <h4>>> view_image.(id = {{.Upload.MGID.Hex }})</h4>
+      {{ if (longerThan .Uploader.Username 0) }}
+      <h4>>> Uploader = " {{ .Uploader.Username }} "</h4>
+      {{ end }}
       {{ range $index, $value := .Exps }}
       <h4 data-exp-id="{{ $value.MGID.Hex }}">>> expression[{{$index}}] = " {{ $value.Expression }} "</h4>
       {{ end }}

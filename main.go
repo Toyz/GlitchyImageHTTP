@@ -203,12 +203,12 @@ func main() {
 	{
 		tools := user.Party("/tools")
 		{
-			tools.Get("/join", routing.UserJoin)
-			tools.Get("/login", routing.UserLogin)
-			tools.Post("/join", func(ctx iris.Context) {
+			tools.Get("/register", routing.UserJoin)
+			tools.Get("/signin", routing.UserLogin)
+			tools.Post("/register", func(ctx iris.Context) {
 				routing.UserTool(routing.CREATE_USER, ctx)
 			})
-			tools.Post("/login", func(ctx iris.Context) {
+			tools.Post("/signin", func(ctx iris.Context) {
 				routing.UserTool(routing.LOGIN_USER, ctx)
 			})
 		}

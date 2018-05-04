@@ -62,5 +62,5 @@ type User struct {
 	Password  string        `json:"-"`
 	Updated   time.Time     `json:"-"`
 	Joined    time.Time     `json:"-"`
-	LastLogin time.Time     `json:"-"` // unused for now
+	LastLogin time.Time     `json:"-" bson:"ll"` // unused for now
 }

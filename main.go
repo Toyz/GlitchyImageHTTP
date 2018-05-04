@@ -211,6 +211,9 @@ func main() {
 			tools.Post("/signin", func(ctx iris.Context) {
 				routing.UserTool(routing.LOGIN_USER, ctx)
 			})
+			tools.Post("/logout", func(ctx iris.Context) {
+				routing.UserTool(routing.LOGOUT_USER, ctx)
+			})
 		}
 
 		user.Get("/{user:string}", routing.UserProfile)

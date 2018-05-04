@@ -42,11 +42,12 @@ func (mg *mongo) InsertUser(user User) User {
 	defer session.Close()
 
 	user.Email = strings.ToLower(user.Email)
-	user.Username = strings.ToLower(user.Email)
+	user.Username = strings.ToLower(user.Username)
 
 	user.MGID = bson.NewObjectId()
 	user.Joined = time.Now()
 	user.Updated = user.Joined
+	user.LastLogin = user.Joined
 
 	c.Insert(user)
 
@@ -54,7 +55,7 @@ func (mg *mongo) InsertUser(user User) User {
 }
 
 func (mg *mongo) ChangePasswordUser(user User, newPass string) User {
-	session, c := mg.collection(EXPRESSION_COL)
+	session, c := mg.collection(USERS_COL)
 	defer session.Close()
 
 	user.Password = newPass
@@ -63,6 +64,20 @@ func (mg *mongo) ChangePasswordUser(user User, newPass string) User {
 	c.Update(
 		bson.M{"_id": user.MGID},
 		bson.M{"$set": bson.M{"password": user.Password, "updated": user.Updated}},
+	)
+
+	return user
+}
+
+func (mg *mongo) SetLastLogin(user User) User {
+	session, c := mg.collection(USERS_COL)
+	defer session.Close()
+
+	user.LastLogin = time.Now()
+
+	c.Update(
+		bson.M{"_id": user.MGID},
+		bson.M{"$set": bson.M{"ll": user.LastLogin}},
 	)
 
 	return user

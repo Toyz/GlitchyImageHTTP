@@ -1,6 +1,7 @@
 package routing
 
 import (
+	"log"
 	"strings"
 
 	"github.com/Toyz/GlitchyImageHTTP/core"
@@ -16,6 +17,16 @@ const (
 )
 
 func UserJoin(ctx iris.Context) {
+	sess := core.SessionManager.Session.Start(ctx)
+
+	if sess.GetBooleanDefault("logged_in", false) {
+		d := sess.Get("user").(map[string]interface{})
+
+		log.Println(d["id"])
+		log.Println(d["email"])
+		log.Println(d["username"])
+	}
+
 }
 
 func UserLogin(ctx iris.Context) {
@@ -30,6 +41,9 @@ func UserTool(tool int, ctx iris.Context) {
 	sess := core.SessionManager.Session.Start(ctx)
 
 	switch tool {
+	case CREATE_USER:
+		join(ctx, sess)
+		return
 	case LOGIN_USER:
 		login(ctx, sess)
 		return
@@ -69,6 +83,46 @@ func login(ctx iris.Context, sess *ss.Session) {
 
 		return
 	}
+
+	sess.Set("logged_in", true)
+
+	user.Password = ""
+	sess.Set("user", user)
+
+	user = database.MongoInstance.SetLastLogin(user)
+
+	ctx.JSON(UploadResult{
+		ID: user.MGID.Hex(), // UserID for redirect to there profile
+	})
+}
+
+func join(ctx iris.Context, sess *ss.Session) {
+	email := strings.TrimSpace(ctx.FormValueDefault("email", ""))
+	pass := ctx.FormValueDefault("pass", "")
+	username := ctx.FormValueDefault("uname", "")
+
+	if len(email) <= 0 || len(pass) <= 0 || len(username) <= 0 {
+		ctx.JSON(JsonError{
+			Error: "Email, Password or Username must not be empty!",
+		})
+
+		return
+	}
+
+	user := database.MongoInstance.GetUserByEmail(email)
+	if len(user.Email) > 0 && strings.EqualFold(email, user.Email) {
+		ctx.JSON(JsonError{
+			Error: "Email already in use",
+		})
+
+		return
+	}
+
+	user = database.MongoInstance.InsertUser(database.User{
+		Email:    email,
+		Username: username,
+		Password: pass,
+	})
 
 	sess.Set("logged_in", true)
 

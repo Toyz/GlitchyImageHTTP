@@ -213,7 +213,7 @@ func gifImage(file multipart.File, expressions []string) (error, *bytes.Buffer, 
 func Upload(ctx iris.Context) {
 	saveMode = filemodes.GetFileMode()
 
-	ctx.SetMaxRequestBodySize(30 << 20) // 30mb because we can
+	ctx.SetMaxRequestBodySize(65 << 20) // 65mb because we can
 
 	err, expressions, _ := validateFormFeilds(ctx)
 	if err != nil {

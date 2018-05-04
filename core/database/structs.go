@@ -56,10 +56,11 @@ type CategoryItem struct {
 }
 
 type User struct {
-	MGID     bson.ObjectId `json:"-" bson:"_id,omitempty"`
-	Email    string        `json:"-"`
-	Username string        `json:"-"`
-	Password string        `json:"-"`
-	Updated  time.Time     `json:"-"`
-	Joined   time.Time     `json:"-"`
+	MGID      bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	Email     string        `json:"email"`
+	Username  string        `json:"username"`
+	Password  string        `json:"-"`
+	Updated   time.Time     `json:"-"`
+	Joined    time.Time     `json:"-"`
+	LastLogin time.Time     `json:"-"` // unused for now
 }

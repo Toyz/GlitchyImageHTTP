@@ -34,8 +34,8 @@ func UserTool(tool int, ctx iris.Context) {
 		login(ctx, sess)
 		return
 	case LOGOUT_USER:
-		sess.Set("logged_in", false)
-		sess.Set("user", nil)
+		sess.Delete("logged_in")
+		sess.Delete("user")
 		ctx.Redirect("/")
 		return
 	}

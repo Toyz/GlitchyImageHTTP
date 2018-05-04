@@ -199,6 +199,23 @@ func main() {
 	app.Get("/", Index)
 	app.Post("/upload", routing.Upload)
 
+	user := app.Party("/u")
+	{
+		tools := user.Party("/tools")
+		{
+			tools.Get("/join", routing.UserJoin)
+			tools.Get("/login", routing.UserLogin)
+			tools.Post("/join", func(ctx iris.Context) {
+				routing.UserTool(routing.CREATE_USER, ctx)
+			})
+			tools.Post("/login", func(ctx iris.Context) {
+				routing.UserTool(routing.LOGIN_USER, ctx)
+			})
+		}
+
+		user.Get("/{user:string}", routing.UserProfile)
+	}
+
 	stats := app.Party("/stats")
 	{
 		exp := stats.Party("/exps")

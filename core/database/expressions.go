@@ -81,13 +81,13 @@ func (mg *mongo) GetExpressionByName(name string) ExpressionItem {
 	return ExpressionItem{}
 }
 
-func (mg *mongo) OrderExpression(mode string, limit int) []ExpressionItem {
+func (mg *mongo) OrderExpression(mode string, page, limit int) []ExpressionItem {
 	items := make([]ExpressionItem, limit)
 
 	session, c := mg.collection(EXPRESSION_COL)
 	defer session.Close()
 
-	c.Find(bson.M{}).Sort(fmt.Sprintf("%susage", mode)).Limit(limit).All(&items)
+	c.Find(bson.M{}).Sort(fmt.Sprintf("%susage", mode)).Limit(limit).Skip(page * limit).All(&items)
 
 	return items
 }

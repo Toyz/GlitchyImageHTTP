@@ -43,13 +43,13 @@ func (mg *mongo) GetImageInfo(id bson.ObjectId) ArtItem {
 	return image
 }
 
-func (mg *mongo) GetArtByOrder(mode string, limit int) []ArtItem {
+func (mg *mongo) GetArtByOrder(mode string, page, limit int) []ArtItem {
 	items := make([]ArtItem, limit)
 
 	session, c := mg.collection(ARTIDS_COL)
 	defer session.Close()
 
-	c.Find(bson.M{}).Sort(fmt.Sprintf("%sviews", mode)).Limit(limit).All(&items)
+	c.Find(bson.M{}).Sort(fmt.Sprintf("%sviews", mode)).Limit(limit).Skip(page * limit).All(&items)
 
 	return items
 }

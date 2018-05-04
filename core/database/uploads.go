@@ -44,13 +44,13 @@ func (mg *mongo) IncUploadViews(id bson.ObjectId) error {
 	return nil
 }
 
-func (mg *mongo) OrderUploads(mode string, limit int) []Upload {
+func (mg *mongo) OrderUploads(mode string, page, limit int) []Upload {
 	items := make([]Upload, limit)
 
 	session, c := mg.collection(UPLOADS_COL)
 	defer session.Close()
 
-	c.Find(bson.M{}).Sort(fmt.Sprintf("%sviews", mode)).Limit(limit).All(&items)
+	c.Find(bson.M{}).Sort(fmt.Sprintf("%sviews", mode)).Limit(limit).Skip(page * limit).All(&items)
 
 	return items
 }

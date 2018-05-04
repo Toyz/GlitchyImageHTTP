@@ -13,7 +13,12 @@ func ViewedExpressions(mode string, ctx iris.Context) {
 		limit = 20
 	}
 
-	items := database.MongoInstance.OrderExpression(mode, limit)
+	page, err := ctx.URLParamInt("page")
+	if page <= 0 || err != nil {
+		page = 1
+	}
+
+	items := database.MongoInstance.OrderExpression(mode, page-1, limit)
 
 	expItems := make([]API_Expression, len(items))
 
@@ -49,7 +54,12 @@ func ViewedImages(mode string, ctx iris.Context) {
 		limit = 20
 	}
 
-	items := database.MongoInstance.OrderUploads(mode, limit)
+	page, err := ctx.URLParamInt("page")
+	if page <= 0 || err != nil {
+		page = 1
+	}
+
+	items := database.MongoInstance.OrderUploads(mode, page-1, limit)
 
 	artItems := make([]API_ArtInfo, len(items))
 

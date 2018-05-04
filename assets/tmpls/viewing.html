@@ -4,16 +4,16 @@
       <h4>>> view_image.(id = {{.Upload.MGID.Hex }})</h4>
       {{ if (longerThan .Uploader.Username 0) }}
       <h4>>> Uploader = " {{ .Uploader.Username }} "</h4>
-      {{ end }}
+      {{ end }} 
       {{ range $index, $value := .Exps }}
       <h4 data-exp-id="{{ $value.MGID.Hex }}">>> expression[{{$index}}] = " {{ $value.Expression }} "</h4>
-      {{ end }}
+      {{ end }} 
       {{ if gr .Image.FileSize 0 }}
-      <h4>>> image_size = " {{ formatFS .Image.FileSize }} "</h4>  
-      {{ end }}    
+      <h4>>> image_size = " {{ formatFS .Image.FileSize }} "</h4>
+      {{ end }} 
       {{ if (gr .Image.Width 0) and (gr .Image.Height 0)}}
-      <h4>>> image_bounds = " {{ .Image.Width }} x {{ .Image.Height }} "</h4> 
-      {{ end }}     
+      <h4>>> image_bounds = " {{ .Image.Width }} x {{ .Image.Height }} "</h4>
+      {{ end }}
       <h4>>> total_views = {{.Upload.Views}}</h4>
       <h4>>> uploaded_on = " {{.Image.Uploaded}} "</h4>
       <h4>>> upload_t_minus = " {{ replace "ago" "" (formatTime .Image.Uploaded) 1 }} "</h4>

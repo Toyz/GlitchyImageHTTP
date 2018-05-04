@@ -87,3 +87,6 @@ Y ^ (s & (60 > (y < (239 ? (c / b)))))
 
 # line art
 L ^ H
+
+# alter effects
+r | v < h ^ L % R

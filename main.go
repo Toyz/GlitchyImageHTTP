@@ -124,6 +124,19 @@ func loadExpressions(expressionList []string) {
 				Usage:      1,
 				CatIDs:     catIds,
 			})
+		} else {
+			catExist := false
+			for i := 0; i < len(exp.CatIDs); i++ {
+				catLID := exp.CatIDs[i].Hex()
+				catExist = strings.EqualFold(catLID, expressCat.ID)
+			}
+
+			if !catExist {
+				ccc := bson.ObjectIdHex(expressCat.ID)
+				exp.CatIDs = append(exp.CatIDs, ccc)
+				// Update
+				database.MongoInstance.AddCateoryToExpression(exp, ccc)
+			}
 		}
 
 		catsAll := make([]routing.API_Category, len(exp.CatIDs))

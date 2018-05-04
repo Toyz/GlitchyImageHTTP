@@ -91,3 +91,15 @@ func (mg *mongo) OrderExpression(mode string, limit int) []ExpressionItem {
 
 	return items
 }
+
+func (mg *mongo) AddCateoryToExpression(exp ExpressionItem, cat bson.ObjectId) ExpressionItem {
+	session, c := mg.collection(EXPRESSION_COL)
+	defer session.Close()
+
+	c.Update(
+		bson.M{"_id": exp.MGID},
+		bson.M{"$push": bson.M{"cats": cat}},
+	)
+
+	return exp
+}

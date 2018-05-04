@@ -34,11 +34,15 @@ func (mg *mongo) GetUserByID(id bson.ObjectId) User {
 	return User{}
 }
 
+// This sets the user ID and the users Join & Update times
 func (mg *mongo) InsertUser(user User) User {
 	session, c := mg.collection(USERS_COL)
 	defer session.Close()
 
 	user.MGID = bson.NewObjectId()
+	user.Joined = time.Now()
+	user.Updated = user.Joined
+
 	c.Insert(user)
 
 	return user

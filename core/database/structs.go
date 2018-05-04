@@ -60,4 +60,6 @@ type User struct {
 	Email    string        `json:"-"`
 	Username string        `json:"-"`
 	Password string        `json:"-"`
+	Updated  time.Time     `json:"-"`
+	Joined   time.Time     `json:"-"`
 }

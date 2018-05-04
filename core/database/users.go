@@ -1,6 +1,8 @@
 package database
 
 import (
+	"time"
+
 	"github.com/globalsign/mgo/bson"
 )
 
@@ -38,6 +40,21 @@ func (mg *mongo) InsertUser(user User) User {
 
 	user.MGID = bson.NewObjectId()
 	c.Insert(user)
+
+	return user
+}
+
+func (mg *mongo) ChangePasswordUser(user User, newPass string) User {
+	session, c := mg.collection(EXPRESSION_COL)
+	defer session.Close()
+
+	user.Password = newPass
+	user.Updated = time.Now()
+
+	c.Update(
+		bson.M{"_id": user.MGID},
+		bson.M{"$set": bson.M{"password": user.Password, "updated": user.Updated}},
+	)
 
 	return user
 }

@@ -1,8 +1,10 @@
 package database
 
 import (
+	"log"
 	"time"
 
+	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 )
 
@@ -38,6 +40,20 @@ func (mg *mongo) GetUserByID(id bson.ObjectId) User {
 func (mg *mongo) InsertUser(user User) User {
 	session, c := mg.collection(USERS_COL)
 	defer session.Close()
+
+	index := mgo.Index{
+		Key:        []string{"email"},
+		Unique:     true,
+		DropDups:   true,
+		Background: true,
+		Sparse:     true,
+	}
+
+	err := c.EnsureIndex(index)
+	if err != nil {
+		log.Println(err)
+		return User{}
+	}
 
 	user.MGID = bson.NewObjectId()
 	user.Joined = time.Now()

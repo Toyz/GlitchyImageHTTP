@@ -74,7 +74,7 @@ func login(ctx iris.Context, sess *ss.Session) {
 		return
 	}
 
-	if user.Password != pass {
+	if !core.CheckPasswordHash(pass, user.Password) {
 		ctx.JSON(JsonError{
 			Error: "Email/Password is invalid",
 		})
@@ -116,10 +116,19 @@ func join(ctx iris.Context, sess *ss.Session) {
 		return
 	}
 
+	if len(pass) < 8 {
+		ctx.JSON(JsonError{
+			Error: "Password must be atleast 8 charaters",
+		})
+
+		return
+	}
+
+	passord, _ := core.HashPassword(pass)
 	user = database.MongoInstance.InsertUser(database.User{
 		Email:    email,
 		Username: username,
-		Password: pass,
+		Password: passord,
 	})
 
 	sess.Set("logged_in", true)

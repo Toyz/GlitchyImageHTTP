@@ -44,8 +44,8 @@
     "service/s3",
     "service/sts"
   ]
-  revision = "236a3fce423171d03ae327a8aa2512e6fb24df36"
-  version = "v1.13.39"
+  revision = "4f5d298bd2dcb34b06d944594f458d1f77ac4d66"
+  version = "v1.13.42"
 
 [[projects]]
   branch = "master"
@@ -201,8 +201,8 @@
     "sessions/sessiondb/redis/service",
     "view"
   ]
-  revision = "f85b10ec72337c117d2844e441795b0f070b45ca"
-  version = "v10.6.0"
+  revision = "88fa66786e29e7874fe2e0669c478e019511b69b"
+  version = "v10.6.3"
 
 [[projects]]
   branch = "master"
@@ -358,9 +358,11 @@
   name = "golang.org/x/crypto"
   packages = [
     "acme",
-    "acme/autocert"
+    "acme/autocert",
+    "bcrypt",
+    "blowfish"
   ]
-  revision = "ae8bce0030810cf999bb2b9868ae5c7c58e6343b"
+  revision = "4ec37c66abab2c7e02ae775328b2ff001c3f025a"
 
 [[projects]]
   branch = "master"
@@ -369,13 +371,13 @@
     "html",
     "html/atom"
   ]
-  revision = "5f9ae10d9af5b1c89ae6904293b14b064d4ada23"
+  revision = "640f4622ab692b87c2f3a94265e6f579fe38263d"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "4adea008a5e5f820b6028611ae0b6b3fbcec534b"
+  revision = "6f686a352de66814cdd080d970febae7767857a3"
 
 [[projects]]
   name = "gopkg.in/AlecAivazis/survey.v1"
@@ -401,6 +403,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4b18d43a1b3d4bcc1825a115e4b16c7814eac2cc5358103aa09c4dd8c1411a1d"
+  inputs-digest = "24086a1bc6f1555c3433d94450cf88a4c0d8dfde6d7ea77224af9f0b3fe83e81"
   solver-name = "gps-cdcl"
   solver-version = 1

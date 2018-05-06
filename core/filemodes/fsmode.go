@@ -2,10 +2,12 @@ package filemodes
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path"
 
 	"github.com/Toyz/GlitchyImageHTTP/core"
+	"github.com/kataras/iris"
 )
 
 type FSMode struct{}
@@ -36,5 +38,10 @@ func (*FSMode) Path() string {
 }
 
 func (*FSMode) FullPath(folder, filename string) string {
-	return "" // TODO: make this return the local path
+	return fmt.Sprintf("/uploads/%s", filename)
+}
+
+func (fs *FSMode) StaticPath(app *iris.Application) {
+	log.Printf(fs.Path())
+	app.StaticWeb("/uploads", fs.Path())
 }

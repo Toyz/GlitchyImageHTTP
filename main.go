@@ -203,6 +203,7 @@ func main() {
 	app.RegisterView(tmpEngine.ViewEngine)
 
 	app.StaticWeb("/static", "./assets/public")
+	filemodes.GetFileMode().StaticPath(app)
 
 	app.Get("/", Index)
 	app.Post("/upload", routing.Upload)

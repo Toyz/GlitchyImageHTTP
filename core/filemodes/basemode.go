@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Toyz/GlitchyImageHTTP/core"
+	"github.com/kataras/iris"
 	"github.com/sony/sonyflake"
 )
 
@@ -13,6 +14,7 @@ type SaveMode interface {
 	Read(string) []byte
 	Path() string
 	FullPath(folder, name string) string
+	StaticPath(*iris.Application)
 }
 
 var flaky *sonyflake.Sonyflake

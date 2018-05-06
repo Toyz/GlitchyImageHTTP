@@ -28,7 +28,11 @@ debug
 bindata.go
 assets/version.txt
 uploads/*.png
+uploads/*.gif
+uploads/*.jpg
 assets/uploads/*.png
+assets/uploads/*.gif
+assets/uploads/*.jpg
 
 # redundant sh*t
 chat.txt

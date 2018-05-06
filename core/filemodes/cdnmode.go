@@ -13,6 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/kataras/iris"
 )
 
 type CDNMode struct {
@@ -85,4 +86,8 @@ func (cdn *CDNMode) FullPath(folder, filename string) string {
 	fullPath := cdn.Path()
 
 	return fmt.Sprintf("%s%s%s", fullPath, folder, filename)
+}
+
+func (*CDNMode) StaticPath(_ *iris.Application) {
+	return
 }

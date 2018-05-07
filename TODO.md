@@ -1,4 +1,3 @@
-- User Accounts
 - Allow users to save favorite algos
 - List all built in algos based on there category
 - Allow users to favorite images

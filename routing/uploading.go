@@ -6,20 +6,17 @@ import (
 	"errors"
 	"fmt"
 	"image"
-	"image/gif"
-	"image/jpeg"
-	"image/png"
 	"mime/multipart"
 	"strings"
 	"time"
 
 	"github.com/globalsign/mgo/bson"
+	glitch "github.com/sugoiuguu/go-glitch"
 
 	"github.com/Toyz/GlitchyImageHTTP/core"
 	"github.com/Toyz/GlitchyImageHTTP/core/database"
 	"github.com/Toyz/GlitchyImageHTTP/core/filemodes"
 	"github.com/kataras/iris"
-	glitch "github.com/sugoiuguu/go-glitch"
 )
 
 var allowedFileTypes = []string{"image/jpeg", "image/png", "image/jpg", "image/gif"}
@@ -122,78 +119,10 @@ func SaveImage(dataBuff *bytes.Buffer, cntType string, OrgFileName string, bound
 }
 
 func processImage(file multipart.File, mime string, expressions []string) (error, *bytes.Buffer, image.Rectangle) {
-	buff := new(bytes.Buffer)
-	var bounds image.Rectangle
-	switch strings.ToLower(mime) {
-	case "image/gif":
-		err, by, rect := gifImage(file, expressions)
-		bounds = rect
-
-		if err != nil {
-			return err, nil, bounds
-		}
-		buff = by
-		break
-	default:
-		img, _, err := image.Decode(file)
+	for _, expression := range expressions {
+		_, err := glitch.CompileExpression(expression)
 		if err != nil {
 			return err, nil, image.Rectangle{}
-		}
-		bounds = img.Bounds()
-
-		out := img
-		for _, expression := range expressions {
-			expr, err := glitch.CompileExpression(expression)
-			if err != nil {
-				return err, nil, bounds
-			}
-
-			exp := database.MongoInstance.GetExpressionByName(expression)
-			if len(exp.ExpressionCmp) > 0 {
-				database.MongoInstance.UpdateExpressionUsage(exp.MGID)
-			} else {
-				database.MongoInstance.AddExpression(database.ExpressionItem{
-					Expression: expression,
-				})
-			}
-
-			newImage, err := expr.JumblePixels(out)
-			if err != nil {
-				out = nil
-				return err, nil, bounds
-			}
-			out = newImage
-			newImage = nil
-		}
-
-		switch strings.ToLower(mime) {
-		case "image/png":
-			png.Encode(buff, out)
-			break
-		case "image/jpg", "image/jpeg":
-			jpeg.Encode(buff, out, nil)
-			break
-		}
-	}
-
-	return nil, buff, bounds
-}
-
-func gifImage(file multipart.File, expressions []string) (error, *bytes.Buffer, image.Rectangle) {
-	var bounds image.Rectangle
-	buff := new(bytes.Buffer)
-	lGif, err := gif.DecodeAll(file)
-
-	bounds = lGif.Image[0].Bounds()
-	if err != nil {
-		return err, nil, image.Rectangle{}
-	}
-
-	out := lGif
-	for _, expression := range expressions {
-		expr, err := glitch.CompileExpression(expression)
-		if err != nil {
-			return err, nil, bounds
 		}
 
 		exp := database.MongoInstance.GetExpressionByName(expression)
@@ -204,22 +133,17 @@ func gifImage(file multipart.File, expressions []string) (error, *bytes.Buffer, 
 				Expression: expression,
 			})
 		}
-
-		newImage, err := expr.JumbleGIFPixels(out)
-		if err != nil {
-			out = nil
-			return err, nil, bounds
-		}
-		out = newImage
-		newImage = nil
 	}
 
-	err = gif.EncodeAll(buff, out)
-	if err != nil {
-		return err, nil, bounds
-	}
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(file)
 
-	return nil, buff, bounds
+	data := core.SendImageToService(buf.Bytes(), mime, false, expressions)
+	buf.Reset()
+
+	b := bytes.NewBuffer(data.From.File)
+
+	return nil, b, data.From.Bounds
 }
 
 func Upload(ctx iris.Context) {

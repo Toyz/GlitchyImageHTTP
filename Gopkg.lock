@@ -14,6 +14,12 @@
   revision = "8828253bfc54f2f91aaef5f32b44a244b0a98e4f"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/Toyz/GlitchyImageService"
+  packages = ["engine"]
+  revision = "6a3105c3f7fc049bb9ee6ceb1bdbb6e5ef7d09f5"
+
+[[projects]]
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -403,6 +409,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "24086a1bc6f1555c3433d94450cf88a4c0d8dfde6d7ea77224af9f0b3fe83e81"
+  inputs-digest = "b14bac702499101bb5c64550508fff456665a4735eca10f4d84e360500703fec"
   solver-name = "gps-cdcl"
   solver-version = 1

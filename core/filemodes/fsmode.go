@@ -37,7 +37,7 @@ func (*FSMode) Path() string {
 	return core.GetEnv("FS_UPLOADS_FOLDER", fmt.Sprintf("%s%s", core.AssetsFolder(), "uploads"))
 }
 
-func (*FSMode) FullPath(folder, filename string) string {
+func (*FSMode) FullPath(_, filename string) string {
 	return fmt.Sprintf("/uploads/%s", filename)
 }
 

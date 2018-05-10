@@ -151,7 +151,7 @@ func Upload(ctx iris.Context) {
 
 	saveMode = filemodes.GetFileMode()
 
-	ctx.SetMaxRequestBodySize(65 << 20) // 65mb because we can
+	ctx.SetMaxRequestBodySize(160 << 20) // 160mb because we can
 
 	err, expressions, _ := validateFormFeilds(ctx)
 	if err != nil {

@@ -89,9 +89,12 @@ func login(ctx iris.Context, sess *ss.Session) {
 
 	user = database.MongoInstance.SetLastLogin(user)
 
-	ctx.JSON(UploadResult{
-		ID: user.MGID.Hex(), // UserID for redirect to there profile
-	})
+	/*
+		ctx.JSON(UploadResult{
+			ID: user.MGID.Hex(), // UserID for redirect to there profile
+		})
+	*/
+	ctx.Redirect("/")
 }
 
 func join(ctx iris.Context, sess *ss.Session) {
@@ -136,7 +139,10 @@ func join(ctx iris.Context, sess *ss.Session) {
 	user.Password = ""
 	sess.Set("user", user)
 
-	ctx.JSON(UploadResult{
-		ID: user.MGID.Hex(), // UserID for redirect to there profile
-	})
+	/*
+		ctx.JSON(UploadResult{
+			ID: user.MGID.Hex(), // UserID for redirect to there profile
+		})
+	*/
+	ctx.Redirect("/")
 }

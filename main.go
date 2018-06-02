@@ -33,7 +33,7 @@ var saveMode filemodes.SaveMode
 var defaultExpressions []routing.API_Expression
 
 func Index(ctx iris.Context) {
-	token := filemodes.GetID("sdlkfjdklfjdskjfhdskajfhs")
+	token := bson.NewObjectId().Hex()
 
 	//core.RedisManager.Set(fmt.Sprintf("Upload%s", token), token, 30*time.Minute)
 	ctx.ViewData("Home", routing.HomePage{

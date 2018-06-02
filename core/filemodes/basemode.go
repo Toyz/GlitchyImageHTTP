@@ -1,11 +1,8 @@
 package filemodes
 
 import (
-	"fmt"
-
 	"github.com/Toyz/GlitchyImageHTTP/core"
 	"github.com/kataras/iris"
-	"github.com/sony/sonyflake"
 )
 
 type SaveMode interface {
@@ -15,12 +12,6 @@ type SaveMode interface {
 	Path() string
 	FullPath(folder, name string) string
 	StaticPath(*iris.Application)
-}
-
-var flaky *sonyflake.Sonyflake
-
-func init() {
-	flaky = sonyflake.NewSonyflake(sonyflake.Settings{})
 }
 
 func GetFileMode() SaveMode {
@@ -35,10 +26,4 @@ func GetFileMode() SaveMode {
 
 	mode.Setup()
 	return mode
-}
-
-func GetID(id string) string {
-	idx, _ := flaky.NextID()
-
-	return fmt.Sprintf("%x", idx)
 }
